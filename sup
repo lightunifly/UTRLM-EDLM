@@ -1,0 +1,35 @@
+#!/bin/bash
+#SBATCH --job-name=edlm
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH -p gpu_4090
+#SBATCH --gpus=1
+#SBATCH --output=log.txt
+#SBATCH --error=err.txt
+
+python main.py
+#python utrlm.py
+#ls
+#python try.py
+#export HYDRA_FULL_ERROR=1
+
+
+#export PYTHONPATH="/data/home/scxj534/run/wu/quantum/Energy-Diffusion-LLM-main/:$PYTHONPATH"
+#export TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1
+#python try.py
+
+#python -u -m main \
+#python main.py \
+#    mode=sample_eval \
+#    hydra.run.dir=outputs \
+#    data=openwebtext-split  \
+#    model.length=1024  \
+#    sampling.predictor=ddpm_cache  \
+#    sampling.steps=128 \
+#    sampling.is_size=2 \
+#    sampling.is_start=0.6 \
+#    sampling.is_end=0.4 \
+#    loader.eval_batch_size=1 \
+#    sampling.num_sample_batches=2 \
+#    ebm_backbone=ar
+#    hydra.run.dir=outputs/$exp_name \

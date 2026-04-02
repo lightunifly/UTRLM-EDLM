@@ -1,0 +1,389 @@
+in main.py
+points
+{'mode': 'sample_eval', 'diffusion': 'absorbing_state', 'backbone': 'utrlm', 'ebm_backbone': 'utrlm', 'parameterization': 'subs', 'time_conditioning': False, 'T': 0, 'subs_masking': False, 'seed': 1, 'path': '/data/home/scxj534/run/wu/quantum/Energy-Diffusion-LLM-main/configs', 'loader': {'global_batch_size': 512, 'eval_global_batch_size': '${.global_batch_size}', 'batch_size': '${div_up:${.global_batch_size}, ${eval:${trainer.devices} * ${trainer.num_nodes}}}', 'eval_batch_size': 1, 'num_workers': '${eval:"len(__import__(\'os\').sched_getaffinity(0))"}', 'pin_memory': True}, 'sampling': {'predictor': 'ddpm_cache', 'steps': 128, 'noise_removal': True, 'num_sample_batches': 2, 'num_sample_log': 2, 'semi_ar': False, 'stride_length': 1, 'num_strides': 1, 'is_size': 2, 'is_start': 0.6, 'is_end': 0.4, 'is_temp': 1, 'ar_carry_over': True}, 'training': {'ema': 0.9999, 'antithetic_sampling': True, 'importance_sampling': False, 'sampling_eps': 0.001, 'change_of_variables': False}, 'eval': {'checkpoint_path': 'kuleshov-group/mdlm-owt', 'disable_ema': False, 'compute_generative_perplexity': False, 'perplexity_batch_size': 8, 'compute_perplexity_on_sanity': False, 'gen_ppl_eval_model_name_or_path': 'gpt2', 'generate_samples': True}, 'optim': {'weight_decay': 0, 'lr': 0.0003, 'beta1': 0.9, 'beta2': 0.999, 'eps': 1e-08}, 'trainer': {'_target_': 'lightning.Trainer', 'accelerator': 'cuda', 'num_nodes': 1, 'devices': 1, 'accumulate_grad_batches': '${div_up:${loader.global_batch_size}, ${eval:${trainer.devices} * ${loader.batch_size} * ${trainer.num_nodes}}}', 'gradient_clip_val': 1.0, 'precision': 'bf16', 'num_sanity_val_steps': 2, 'max_steps': 1000000, 'log_every_n_steps': 10, 'limit_train_batches': 1.0, 'limit_val_batches': 1.0, 'val_check_interval': 10000}, 'wandb': {'project': 'text-diffusion', 'notes': 'Mulan for text', 'group': None, 'job_type': None, 'name': None, 'id': '${.name}_${seed}', 'tags': ['${noise.type}', '${data.train}', '${data.valid}']}, 'checkpointing': {'save_dir': '/data/home/scxj534/wu/quantum/Energy-Diffusion-LLM-main/', 'resume_from_ckpt': True, 'resume_ckpt_path': '${.save_dir}/checkpoints/last.ckpt'}, 'callbacks': {'checkpoint_every_n_steps': {'_target_': 'lightning.pytorch.callbacks.ModelCheckpoint', 'save_top_k': -1, 'save_last': True, 'dirpath': '${checkpointing.save_dir}/checkpoints', 'verbose': True, 'auto_insert_metric_name': False, 'every_n_train_steps': 500}, 'checkpoint_monitor': {'_target_': 'lightning.pytorch.callbacks.ModelCheckpoint', 'monitor': 'val/nll', 'mode': 'min', 'save_top_k': 1, 'save_last': False, 'dirpath': '${checkpointing.save_dir}/checkpoints', 'filename': 'best', 'auto_insert_metric_name': False, 'verbose': True}, 'learning_rate_monitor': {'_target_': 'lightning.pytorch.callbacks.LearningRateMonitor', 'logging_interval': 'step'}}, 'data': {'train': 'openwebtext', 'valid': 'wikitext103', 'tokenizer_name_or_path': 'utrlm', 'cache_dir': '${path}/data', 'wrap': True, 'streaming': False}, 'model': {'name': 'small', 'type': 'ddit', 'hidden_size': 768, 'cond_dim': 128, 'length': 1024, 'n_blocks': 12, 'n_heads': 12, 'scale_by_sigma': True, 'dropout': 0.1, 'tie_word_embeddings': False}, 'strategy': {'_target_': 'lightning.pytorch.strategies.DDPStrategy', 'find_unused_parameters': False}, 'noise': {'type': 'loglinear', 'sigma_min': 0.0001, 'sigma_max': 20}, 'lr_scheduler': {'_target_': 'transformers.get_constant_schedule_with_warmup', 'num_warmup_steps': 2500}}
+CONFIG
+├── mode
+│   └── sample_eval                                                             
+├── diffusion
+│   └── absorbing_state                                                         
+├── backbone
+│   └── utrlm                                                                   
+├── ebm_backbone
+│   └── utrlm                                                                   
+├── parameterization
+│   └── subs                                                                    
+├── time_conditioning
+│   └── False                                                                   
+├── T
+│   └── 0                                                                       
+├── subs_masking
+│   └── False                                                                   
+├── seed
+│   └── 1                                                                       
+├── path
+│   └── /data/home/scxj534/run/wu/quantum/Energy-Diffusion-LLM-main/configs     
+├── loader
+│   └── global_batch_size: 512                                                  
+│       eval_global_batch_size: 512                                             
+│       batch_size: 512                                                         
+│       eval_batch_size: 1                                                      
+│       num_workers: 6                                                          
+│       pin_memory: true                                                        
+│                                                                               
+├── sampling
+│   └── predictor: ddpm_cache                                                   
+│       steps: 128                                                              
+│       noise_removal: true                                                     
+│       num_sample_batches: 2                                                   
+│       num_sample_log: 2                                                       
+│       semi_ar: false                                                          
+│       stride_length: 1                                                        
+│       num_strides: 1                                                          
+│       is_size: 2                                                              
+│       is_start: 0.6                                                           
+│       is_end: 0.4                                                             
+│       is_temp: 1                                                              
+│       ar_carry_over: true                                                     
+│                                                                               
+├── training
+│   └── ema: 0.9999                                                             
+│       antithetic_sampling: true                                               
+│       importance_sampling: false                                              
+│       sampling_eps: 0.001                                                     
+│       change_of_variables: false                                              
+│                                                                               
+├── eval
+│   └── checkpoint_path: kuleshov-group/mdlm-owt                                
+│       disable_ema: false                                                      
+│       compute_generative_perplexity: false                                    
+│       perplexity_batch_size: 8                                                
+│       compute_perplexity_on_sanity: false                                     
+│       gen_ppl_eval_model_name_or_path: gpt2                                   
+│       generate_samples: true                                                  
+│                                                                               
+├── optim
+│   └── weight_decay: 0                                                         
+│       lr: 0.0003                                                              
+│       beta1: 0.9                                                              
+│       beta2: 0.999                                                            
+│       eps: 1.0e-08                                                            
+│                                                                               
+├── trainer
+│   └── _target_: lightning.Trainer                                             
+│       accelerator: cuda                                                       
+│       num_nodes: 1                                                            
+│       devices: 1                                                              
+│       accumulate_grad_batches: 1                                              
+│       gradient_clip_val: 1.0                                                  
+│       precision: bf16                                                         
+│       num_sanity_val_steps: 2                                                 
+│       max_steps: 1000000                                                      
+│       log_every_n_steps: 10                                                   
+│       limit_train_batches: 1.0                                                
+│       limit_val_batches: 1.0                                                  
+│       val_check_interval: 10000                                               
+│                                                                               
+├── wandb
+│   └── project: text-diffusion                                                 
+│       notes: Mulan for text                                                   
+│       group: null                                                             
+│       job_type: null                                                          
+│       name: null                                                              
+│       id: None_1                                                              
+│       tags:                                                                   
+│       - loglinear                                                             
+│       - openwebtext                                                           
+│       - wikitext103                                                           
+│                                                                               
+├── checkpointing
+│   └── save_dir: /data/home/scxj534/wu/quantum/Energy-Diffusion-LLM-main/      
+│       resume_from_ckpt: true                                                  
+│       resume_ckpt_path: /data/home/scxj534/wu/quantum/Energy-Diffusion-LLM-mai
+│                                                                               
+├── callbacks
+│   └── checkpoint_every_n_steps:                                               
+│         _target_: lightning.pytorch.callbacks.ModelCheckpoint                 
+│         save_top_k: -1                                                        
+│         save_last: true                                                       
+│         dirpath: /data/home/scxj534/wu/quantum/Energy-Diffusion-LLM-main//chec
+│         verbose: true                                                         
+│         auto_insert_metric_name: false                                        
+│         every_n_train_steps: 500                                              
+│       checkpoint_monitor:                                                     
+│         _target_: lightning.pytorch.callbacks.ModelCheckpoint                 
+│         monitor: val/nll                                                      
+│         mode: min                                                             
+│         save_top_k: 1                                                         
+│         save_last: false                                                      
+│         dirpath: /data/home/scxj534/wu/quantum/Energy-Diffusion-LLM-main//chec
+│         filename: best                                                        
+│         auto_insert_metric_name: false                                        
+│         verbose: true                                                         
+│       learning_rate_monitor:                                                  
+│         _target_: lightning.pytorch.callbacks.LearningRateMonitor             
+│         logging_interval: step                                                
+│                                                                               
+├── data
+│   └── train: openwebtext                                                      
+│       valid: wikitext103                                                      
+│       tokenizer_name_or_path: utrlm                                           
+│       cache_dir: /data/home/scxj534/run/wu/quantum/Energy-Diffusion-LLM-main/c
+│       wrap: true                                                              
+│       streaming: false                                                        
+│                                                                               
+├── model
+│   └── name: small                                                             
+│       type: ddit                                                              
+│       hidden_size: 768                                                        
+│       cond_dim: 128                                                           
+│       length: 1024                                                            
+│       n_blocks: 12                                                            
+│       n_heads: 12                                                             
+│       scale_by_sigma: true                                                    
+│       dropout: 0.1                                                            
+│       tie_word_embeddings: false                                              
+│                                                                               
+├── strategy
+│   └── _target_: lightning.pytorch.strategies.DDPStrategy                      
+│       find_unused_parameters: false                                           
+│                                                                               
+├── noise
+│   └── type: loglinear                                                         
+│       sigma_min: 0.0001                                                       
+│       sigma_max: 20                                                           
+│                                                                               
+└── lr_scheduler
+    └── _target_: transformers.get_constant_schedule_with_warmup                
+        num_warmup_steps: 2500                                                  
+                                                                                
+[2026-04-02 08:34:32,016][__main__][INFO] - Generating samples.
+info before config_dif: {'mode': 'sample_eval', 'diffusion': 'absorbing_state', 'backbone': 'utrlm', 'ebm_backbone': 'utrlm', 'parameterization': 'subs', 'time_conditioning': False, 'T': 0, 'subs_masking': False, 'seed': 1, 'path': '/data/home/scxj534/run/wu/quantum/Energy-Diffusion-LLM-main/configs', 'loader': {'global_batch_size': 512, 'eval_global_batch_size': '${.global_batch_size}', 'batch_size': '${div_up:${.global_batch_size}, ${eval:${trainer.devices} * ${trainer.num_nodes}}}', 'eval_batch_size': 1, 'num_workers': '${eval:"len(__import__(\'os\').sched_getaffinity(0))"}', 'pin_memory': True}, 'sampling': {'predictor': 'ddpm_cache', 'steps': 128, 'noise_removal': True, 'num_sample_batches': 2, 'num_sample_log': 2, 'semi_ar': False, 'stride_length': 1, 'num_strides': 1, 'is_size': 2, 'is_start': 0.6, 'is_end': 0.4, 'is_temp': 1, 'ar_carry_over': True}, 'training': {'ema': 0.9999, 'antithetic_sampling': True, 'importance_sampling': False, 'sampling_eps': 0.001, 'change_of_variables': False}, 'eval': {'checkpoint_path': 'kuleshov-group/mdlm-owt', 'disable_ema': False, 'compute_generative_perplexity': False, 'perplexity_batch_size': 8, 'compute_perplexity_on_sanity': False, 'gen_ppl_eval_model_name_or_path': 'gpt2', 'generate_samples': True}, 'optim': {'weight_decay': 0, 'lr': 0.0003, 'beta1': 0.9, 'beta2': 0.999, 'eps': 1e-08}, 'trainer': {'_target_': 'lightning.Trainer', 'accelerator': 'cuda', 'num_nodes': 1, 'devices': 1, 'accumulate_grad_batches': '${div_up:${loader.global_batch_size}, ${eval:${trainer.devices} * ${loader.batch_size} * ${trainer.num_nodes}}}', 'gradient_clip_val': 1.0, 'precision': 'bf16', 'num_sanity_val_steps': 2, 'max_steps': 1000000, 'log_every_n_steps': 10, 'limit_train_batches': 1.0, 'limit_val_batches': 1.0, 'val_check_interval': 10000}, 'wandb': {'project': 'text-diffusion', 'notes': 'Mulan for text', 'group': None, 'job_type': None, 'name': None, 'id': '${.name}_${seed}', 'tags': ['${noise.type}', '${data.train}', '${data.valid}']}, 'checkpointing': {'save_dir': '/data/home/scxj534/wu/quantum/Energy-Diffusion-LLM-main/', 'resume_from_ckpt': True, 'resume_ckpt_path': '${.save_dir}/checkpoints/last.ckpt'}, 'callbacks': {'checkpoint_every_n_steps': {'_target_': 'lightning.pytorch.callbacks.ModelCheckpoint', 'save_top_k': -1, 'save_last': True, 'dirpath': '${checkpointing.save_dir}/checkpoints', 'verbose': True, 'auto_insert_metric_name': False, 'every_n_train_steps': 500}, 'checkpoint_monitor': {'_target_': 'lightning.pytorch.callbacks.ModelCheckpoint', 'monitor': 'val/nll', 'mode': 'min', 'save_top_k': 1, 'save_last': False, 'dirpath': '${checkpointing.save_dir}/checkpoints', 'filename': 'best', 'auto_insert_metric_name': False, 'verbose': True}, 'learning_rate_monitor': {'_target_': 'lightning.pytorch.callbacks.LearningRateMonitor', 'logging_interval': 'step'}}, 'data': {'train': 'openwebtext', 'valid': 'wikitext103', 'tokenizer_name_or_path': 'utrlm', 'cache_dir': '${path}/data', 'wrap': True, 'streaming': False}, 'model': {'name': 'small', 'type': 'ddit', 'hidden_size': 768, 'cond_dim': 128, 'length': 1024, 'n_blocks': 12, 'n_heads': 12, 'scale_by_sigma': True, 'dropout': 0.1, 'tie_word_embeddings': False}, 'strategy': {'_target_': 'lightning.pytorch.strategies.DDPStrategy', 'find_unused_parameters': False}, 'noise': {'type': 'loglinear', 'sigma_min': 0.0001, 'sigma_max': 20}, 'lr_scheduler': {'_target_': 'transformers.get_constant_schedule_with_warmup', 'num_warmup_steps': 2500}}
+info after config_dif: {'mode': 'sample_eval', 'diffusion': 'absorbing_state', 'backbone': 'utrlm', 'ebm_backbone': 'utrlm', 'parameterization': 'subs', 'time_conditioning': False, 'T': 0, 'subs_masking': False, 'seed': 1, 'path': '/data/home/scxj534/run/wu/quantum/Energy-Diffusion-LLM-main/configs', 'loader': {'global_batch_size': 512, 'eval_global_batch_size': '${.global_batch_size}', 'batch_size': '${div_up:${.global_batch_size}, ${eval:${trainer.devices} * ${trainer.num_nodes}}}', 'eval_batch_size': 1, 'num_workers': '${eval:"len(__import__(\'os\').sched_getaffinity(0))"}', 'pin_memory': True}, 'sampling': {'predictor': 'ddpm_cache', 'steps': 128, 'noise_removal': True, 'num_sample_batches': 2, 'num_sample_log': 2, 'semi_ar': False, 'stride_length': 1, 'num_strides': 1, 'is_size': 2, 'is_start': 0.6, 'is_end': 0.4, 'is_temp': 1, 'ar_carry_over': True}, 'training': {'ema': 0.9999, 'antithetic_sampling': True, 'importance_sampling': False, 'sampling_eps': 0.001, 'change_of_variables': False}, 'eval': {'checkpoint_path': 'kuleshov-group/mdlm-owt', 'disable_ema': False, 'compute_generative_perplexity': False, 'perplexity_batch_size': 8, 'compute_perplexity_on_sanity': False, 'gen_ppl_eval_model_name_or_path': 'gpt2', 'generate_samples': True}, 'optim': {'weight_decay': 0, 'lr': 0.0003, 'beta1': 0.9, 'beta2': 0.999, 'eps': 1e-08}, 'trainer': {'_target_': 'lightning.Trainer', 'accelerator': 'cuda', 'num_nodes': 1, 'devices': 1, 'accumulate_grad_batches': '${div_up:${loader.global_batch_size}, ${eval:${trainer.devices} * ${loader.batch_size} * ${trainer.num_nodes}}}', 'gradient_clip_val': 1.0, 'precision': 'bf16', 'num_sanity_val_steps': 2, 'max_steps': 1000000, 'log_every_n_steps': 10, 'limit_train_batches': 1.0, 'limit_val_batches': 1.0, 'val_check_interval': 10000}, 'wandb': {'project': 'text-diffusion', 'notes': 'Mulan for text', 'group': None, 'job_type': None, 'name': None, 'id': '${.name}_${seed}', 'tags': ['${noise.type}', '${data.train}', '${data.valid}']}, 'checkpointing': {'save_dir': '/data/home/scxj534/wu/quantum/Energy-Diffusion-LLM-main/', 'resume_from_ckpt': True, 'resume_ckpt_path': '${.save_dir}/checkpoints/last.ckpt'}, 'callbacks': {'checkpoint_every_n_steps': {'_target_': 'lightning.pytorch.callbacks.ModelCheckpoint', 'save_top_k': -1, 'save_last': True, 'dirpath': '${checkpointing.save_dir}/checkpoints', 'verbose': True, 'auto_insert_metric_name': False, 'every_n_train_steps': 500}, 'checkpoint_monitor': {'_target_': 'lightning.pytorch.callbacks.ModelCheckpoint', 'monitor': 'val/nll', 'mode': 'min', 'save_top_k': 1, 'save_last': False, 'dirpath': '${checkpointing.save_dir}/checkpoints', 'filename': 'best', 'auto_insert_metric_name': False, 'verbose': True}, 'learning_rate_monitor': {'_target_': 'lightning.pytorch.callbacks.LearningRateMonitor', 'logging_interval': 'step'}}, 'data': {'train': 'openwebtext', 'valid': 'wikitext103', 'tokenizer_name_or_path': 'utrlm', 'cache_dir': '${path}/data', 'wrap': True, 'streaming': False}, 'model': {'name': 'small', 'type': 'ddit', 'hidden_size': 768, 'cond_dim': 128, 'length': 1024, 'n_blocks': 12, 'n_heads': 12, 'scale_by_sigma': True, 'dropout': 0.1, 'tie_word_embeddings': False}, 'strategy': {'_target_': 'lightning.pytorch.strategies.DDPStrategy', 'find_unused_parameters': False}, 'noise': {'type': 'loglinear', 'sigma_min': 0.0001, 'sigma_max': 20}, 'lr_scheduler': {'_target_': 'transformers.get_constant_schedule_with_warmup', 'num_warmup_steps': 2500}}
+info: utrlm
+info: kuleshov-group/mdlm-owt
+self.backbone: UtrLmModel(
+  (embeddings): UtrLmEmbeddings(
+    (word_embeddings): Embedding(26, 128, padding_idx=0)
+  )
+  (encoder): UtrLmEncoder(
+    (layer): ModuleList(
+      (0-5): 6 x UtrLmLayer(
+        (attention): UtrLmAttention(
+          (self): UtrLmSelfAttention(
+            (query): Linear(in_features=128, out_features=128, bias=True)
+            (key): Linear(in_features=128, out_features=128, bias=True)
+            (value): Linear(in_features=128, out_features=128, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+            (rotary_embeddings): RotaryEmbedding()
+          )
+          (output): UtrLmSelfOutput(
+            (dense): Linear(in_features=128, out_features=128, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (layer_norm): LayerNorm((128,), eps=1e-12, elementwise_affine=True)
+        )
+        (layer_norm): LayerNorm((128,), eps=1e-12, elementwise_affine=True)
+        (intermediate): UtrLmIntermediate(
+          (dense): Linear(in_features=128, out_features=512, bias=True)
+          (activation): GELUActivation()
+        )
+        (output): UtrLmOutput(
+          (dense): Linear(in_features=512, out_features=128, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+      )
+    )
+    (emb_layer_norm_after): LayerNorm((128,), eps=1e-12, elementwise_affine=True)
+  )
+  (pooler): UtrLmPooler(
+    (dense): Linear(in_features=128, out_features=128, bias=True)
+    (activation): Tanh()
+  )
+)
+gen info: gpt2
+gen info: gpt2
+self.ebm: UtrLmModel(
+  (embeddings): UtrLmEmbeddings(
+    (word_embeddings): Embedding(26, 128, padding_idx=0)
+  )
+  (encoder): UtrLmEncoder(
+    (layer): ModuleList(
+      (0-5): 6 x UtrLmLayer(
+        (attention): UtrLmAttention(
+          (self): UtrLmSelfAttention(
+            (query): Linear(in_features=128, out_features=128, bias=True)
+            (key): Linear(in_features=128, out_features=128, bias=True)
+            (value): Linear(in_features=128, out_features=128, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+            (rotary_embeddings): RotaryEmbedding()
+          )
+          (output): UtrLmSelfOutput(
+            (dense): Linear(in_features=128, out_features=128, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (layer_norm): LayerNorm((128,), eps=1e-12, elementwise_affine=True)
+        )
+        (layer_norm): LayerNorm((128,), eps=1e-12, elementwise_affine=True)
+        (intermediate): UtrLmIntermediate(
+          (dense): Linear(in_features=128, out_features=512, bias=True)
+          (activation): GELUActivation()
+        )
+        (output): UtrLmOutput(
+          (dense): Linear(in_features=512, out_features=128, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+      )
+    )
+    (emb_layer_norm_after): LayerNorm((128,), eps=1e-12, elementwise_affine=True)
+  )
+  (pooler): UtrLmPooler(
+    (dense): Linear(in_features=128, out_features=128, bias=True)
+    (activation): Tanh()
+  )
+)
+stride_length: 1
+num_strides: 1
+num_sample_batches: 2
+semi_ar: False
+model: EBM(
+  (backbone): UtrLmModel(
+    (embeddings): UtrLmEmbeddings(
+      (word_embeddings): Embedding(26, 128, padding_idx=0)
+    )
+    (encoder): UtrLmEncoder(
+      (layer): ModuleList(
+        (0-5): 6 x UtrLmLayer(
+          (attention): UtrLmAttention(
+            (self): UtrLmSelfAttention(
+              (query): Linear(in_features=128, out_features=128, bias=True)
+              (key): Linear(in_features=128, out_features=128, bias=True)
+              (value): Linear(in_features=128, out_features=128, bias=True)
+              (dropout): Dropout(p=0.1, inplace=False)
+              (rotary_embeddings): RotaryEmbedding()
+            )
+            (output): UtrLmSelfOutput(
+              (dense): Linear(in_features=128, out_features=128, bias=True)
+              (dropout): Dropout(p=0.1, inplace=False)
+            )
+            (layer_norm): LayerNorm((128,), eps=1e-12, elementwise_affine=True)
+          )
+          (layer_norm): LayerNorm((128,), eps=1e-12, elementwise_affine=True)
+          (intermediate): UtrLmIntermediate(
+            (dense): Linear(in_features=128, out_features=512, bias=True)
+            (activation): GELUActivation()
+          )
+          (output): UtrLmOutput(
+            (dense): Linear(in_features=512, out_features=128, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+        )
+      )
+      (emb_layer_norm_after): LayerNorm((128,), eps=1e-12, elementwise_affine=True)
+    )
+    (pooler): UtrLmPooler(
+      (dense): Linear(in_features=128, out_features=128, bias=True)
+      (activation): Tanh()
+    )
+    (ebm): UtrLmModel(
+      (embeddings): UtrLmEmbeddings(
+        (word_embeddings): Embedding(26, 128, padding_idx=0)
+      )
+      (encoder): UtrLmEncoder(
+        (layer): ModuleList(
+          (0-5): 6 x UtrLmLayer(
+            (attention): UtrLmAttention(
+              (self): UtrLmSelfAttention(
+                (query): Linear(in_features=128, out_features=128, bias=True)
+                (key): Linear(in_features=128, out_features=128, bias=True)
+                (value): Linear(in_features=128, out_features=128, bias=True)
+                (dropout): Dropout(p=0.1, inplace=False)
+                (rotary_embeddings): RotaryEmbedding()
+              )
+              (output): UtrLmSelfOutput(
+                (dense): Linear(in_features=128, out_features=128, bias=True)
+                (dropout): Dropout(p=0.1, inplace=False)
+              )
+              (layer_norm): LayerNorm((128,), eps=1e-12, elementwise_affine=True)
+            )
+            (layer_norm): LayerNorm((128,), eps=1e-12, elementwise_affine=True)
+            (intermediate): UtrLmIntermediate(
+              (dense): Linear(in_features=128, out_features=512, bias=True)
+              (activation): GELUActivation()
+            )
+            (output): UtrLmOutput(
+              (dense): Linear(in_features=512, out_features=128, bias=True)
+              (dropout): Dropout(p=0.1, inplace=False)
+            )
+          )
+        )
+        (emb_layer_norm_after): LayerNorm((128,), eps=1e-12, elementwise_affine=True)
+      )
+      (pooler): UtrLmPooler(
+        (dense): Linear(in_features=128, out_features=128, bias=True)
+        (activation): Tanh()
+      )
+    )
+  )
+  (softplus): Softplus(beta=1.0, threshold=20.0)
+  (train_metrics): MetricCollection(
+    (bpd): BPD()
+    (nll): NLL()
+    (ppl): Perplexity(),
+    prefix=train/
+  )
+  (valid_metrics): MetricCollection(
+    (bpd): BPD()
+    (nll): NLL()
+    (ppl): Perplexity(),
+    prefix=val/
+  )
+  (test_metrics): MetricCollection(
+    (bpd): BPD()
+    (nll): NLL()
+    (ppl): Perplexity(),
+    prefix=test/
+  )
+  (gen_ppl_metric): Perplexity()
+  (entropy_metric): MeanMetric()
+  (time_metric): MeanMetric()
+  (noise): LogLinearNoise()
+  (ebm): UtrLmModel(
+    (embeddings): UtrLmEmbeddings(
+      (word_embeddings): Embedding(26, 128, padding_idx=0)
+    )
+    (encoder): UtrLmEncoder(
+      (layer): ModuleList(
+        (0-5): 6 x UtrLmLayer(
+          (attention): UtrLmAttention(
+            (self): UtrLmSelfAttention(
+              (query): Linear(in_features=128, out_features=128, bias=True)
+              (key): Linear(in_features=128, out_features=128, bias=True)
+              (value): Linear(in_features=128, out_features=128, bias=True)
+              (dropout): Dropout(p=0.1, inplace=False)
+              (rotary_embeddings): RotaryEmbedding()
+            )
+            (output): UtrLmSelfOutput(
+              (dense): Linear(in_features=128, out_features=128, bias=True)
+              (dropout): Dropout(p=0.1, inplace=False)
+            )
+            (layer_norm): LayerNorm((128,), eps=1e-12, elementwise_affine=True)
+          )
+          (layer_norm): LayerNorm((128,), eps=1e-12, elementwise_affine=True)
+          (intermediate): UtrLmIntermediate(
+            (dense): Linear(in_features=128, out_features=512, bias=True)
+            (activation): GELUActivation()
+          )
+          (output): UtrLmOutput(
+            (dense): Linear(in_features=512, out_features=128, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+        )
+      )
+      (emb_layer_norm_after): LayerNorm((128,), eps=1e-12, elementwise_affine=True)
+    )
+    (pooler): UtrLmPooler(
+      (dense): Linear(in_features=128, out_features=128, bias=True)
+      (activation): Tanh()
+    )
+  )
+)
