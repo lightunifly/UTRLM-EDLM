@@ -1,6 +1,6 @@
 in main.py
 points
-{'mode': 'sample_eval', 'diffusion': 'absorbing_state', 'backbone': 'utrlm', 'ebm_backbone': 'utrlm', 'parameterization': 'subs', 'time_conditioning': False, 'T': 0, 'subs_masking': False, 'seed': 1, 'path': '/data/home/scxj534/run/wu/quantum/Energy-Diffusion-LLM-main/configs', 'loader': {'global_batch_size': 512, 'eval_global_batch_size': '${.global_batch_size}', 'batch_size': '${div_up:${.global_batch_size}, ${eval:${trainer.devices} * ${trainer.num_nodes}}}', 'eval_batch_size': 1, 'num_workers': '${eval:"len(__import__(\'os\').sched_getaffinity(0))"}', 'pin_memory': True}, 'sampling': {'predictor': 'ddpm_cache', 'steps': 128, 'noise_removal': True, 'num_sample_batches': 2, 'num_sample_log': 2, 'semi_ar': False, 'stride_length': 1, 'num_strides': 1, 'is_size': 2, 'is_start': 0.6, 'is_end': 0.4, 'is_temp': 1, 'ar_carry_over': True}, 'training': {'ema': 0.9999, 'antithetic_sampling': True, 'importance_sampling': False, 'sampling_eps': 0.001, 'change_of_variables': False}, 'eval': {'checkpoint_path': 'kuleshov-group/mdlm-owt', 'disable_ema': False, 'compute_generative_perplexity': False, 'perplexity_batch_size': 8, 'compute_perplexity_on_sanity': False, 'gen_ppl_eval_model_name_or_path': 'gpt2', 'generate_samples': True}, 'optim': {'weight_decay': 0, 'lr': 0.0003, 'beta1': 0.9, 'beta2': 0.999, 'eps': 1e-08}, 'trainer': {'_target_': 'lightning.Trainer', 'accelerator': 'cuda', 'num_nodes': 1, 'devices': 1, 'accumulate_grad_batches': '${div_up:${loader.global_batch_size}, ${eval:${trainer.devices} * ${loader.batch_size} * ${trainer.num_nodes}}}', 'gradient_clip_val': 1.0, 'precision': 'bf16', 'num_sanity_val_steps': 2, 'max_steps': 1000000, 'log_every_n_steps': 10, 'limit_train_batches': 1.0, 'limit_val_batches': 1.0, 'val_check_interval': 10000}, 'wandb': {'project': 'text-diffusion', 'notes': 'Mulan for text', 'group': None, 'job_type': None, 'name': None, 'id': '${.name}_${seed}', 'tags': ['${noise.type}', '${data.train}', '${data.valid}']}, 'checkpointing': {'save_dir': '/data/home/scxj534/wu/quantum/Energy-Diffusion-LLM-main/', 'resume_from_ckpt': True, 'resume_ckpt_path': '${.save_dir}/checkpoints/last.ckpt'}, 'callbacks': {'checkpoint_every_n_steps': {'_target_': 'lightning.pytorch.callbacks.ModelCheckpoint', 'save_top_k': -1, 'save_last': True, 'dirpath': '${checkpointing.save_dir}/checkpoints', 'verbose': True, 'auto_insert_metric_name': False, 'every_n_train_steps': 500}, 'checkpoint_monitor': {'_target_': 'lightning.pytorch.callbacks.ModelCheckpoint', 'monitor': 'val/nll', 'mode': 'min', 'save_top_k': 1, 'save_last': False, 'dirpath': '${checkpointing.save_dir}/checkpoints', 'filename': 'best', 'auto_insert_metric_name': False, 'verbose': True}, 'learning_rate_monitor': {'_target_': 'lightning.pytorch.callbacks.LearningRateMonitor', 'logging_interval': 'step'}}, 'data': {'train': 'openwebtext', 'valid': 'wikitext103', 'tokenizer_name_or_path': 'utrlm', 'cache_dir': '${path}/data', 'wrap': True, 'streaming': False}, 'model': {'name': 'small', 'type': 'ddit', 'hidden_size': 768, 'cond_dim': 128, 'length': 1024, 'n_blocks': 12, 'n_heads': 12, 'scale_by_sigma': True, 'dropout': 0.1, 'tie_word_embeddings': False}, 'strategy': {'_target_': 'lightning.pytorch.strategies.DDPStrategy', 'find_unused_parameters': False}, 'noise': {'type': 'loglinear', 'sigma_min': 0.0001, 'sigma_max': 20}, 'lr_scheduler': {'_target_': 'transformers.get_constant_schedule_with_warmup', 'num_warmup_steps': 2500}}
+{'mode': 'sample_eval', 'diffusion': 'absorbing_state', 'backbone': 'utrlm', 'ebm_backbone': 'utrlm', 'parameterization': 'subs', 'time_conditioning': False, 'T': 0, 'subs_masking': False, 'seed': 1, 'path': '/data/home/scxj534/run/wu/quantum/Energy-Diffusion-LLM-main/configs', 'loader': {'global_batch_size': 32, 'eval_global_batch_size': '${.global_batch_size}', 'batch_size': '${div_up:${.global_batch_size}, ${eval:${trainer.devices} * ${trainer.num_nodes}}}', 'eval_batch_size': 1, 'num_workers': '${eval:"len(__import__(\'os\').sched_getaffinity(0))"}', 'pin_memory': True}, 'sampling': {'predictor': 'ddpm_cache', 'steps': 128, 'noise_removal': True, 'num_sample_batches': 2, 'num_sample_log': 2, 'semi_ar': False, 'stride_length': 1, 'num_strides': 1, 'is_size': 2, 'is_start': 0.6, 'is_end': 0.4, 'is_temp': 1, 'ar_carry_over': True}, 'training': {'ema': 0.9999, 'antithetic_sampling': True, 'importance_sampling': False, 'sampling_eps': 0.001, 'change_of_variables': False}, 'eval': {'checkpoint_path': '/data/home/scxj534/run/wu/bakfile/checkpoints/last.ckpt', 'disable_ema': False, 'compute_generative_perplexity': False, 'perplexity_batch_size': 8, 'compute_perplexity_on_sanity': False, 'gen_ppl_eval_model_name_or_path': 'gpt2', 'generate_samples': True}, 'optim': {'weight_decay': 0, 'lr': 0.0003, 'beta1': 0.9, 'beta2': 0.999, 'eps': 1e-08}, 'trainer': {'_target_': 'lightning.Trainer', 'accelerator': 'cuda', 'num_nodes': 1, 'devices': 1, 'accumulate_grad_batches': '${div_up:${loader.global_batch_size}, ${eval:${trainer.devices} * ${loader.batch_size} * ${trainer.num_nodes}}}', 'gradient_clip_val': 1.0, 'precision': 'bf16', 'num_sanity_val_steps': 2, 'max_steps': 10000, 'log_every_n_steps': 10, 'limit_train_batches': 1.0, 'limit_val_batches': 1.0, 'val_check_interval': 10}, 'wandb': {'project': 'text-diffusion', 'notes': 'Mulan for text', 'group': None, 'job_type': None, 'name': None, 'id': '${.name}_${seed}', 'tags': ['${noise.type}', '${data.train}', '${data.valid}']}, 'checkpointing': {'save_dir': '/data/home/scxj534/run/wu/bakfile/', 'resume_from_ckpt': True, 'resume_ckpt_path': '${.save_dir}/checkpoints/last.ckpt'}, 'callbacks': {'checkpoint_every_n_steps': {'_target_': 'lightning.pytorch.callbacks.ModelCheckpoint', 'save_top_k': -1, 'save_last': True, 'dirpath': '${checkpointing.save_dir}/checkpoints', 'verbose': True, 'auto_insert_metric_name': False, 'every_n_train_steps': 500}, 'checkpoint_monitor': {'_target_': 'lightning.pytorch.callbacks.ModelCheckpoint', 'monitor': 'val/nll', 'mode': 'min', 'save_top_k': 1, 'save_last': False, 'dirpath': '${checkpointing.save_dir}/checkpoints', 'filename': 'best', 'auto_insert_metric_name': False, 'verbose': True}, 'learning_rate_monitor': {'_target_': 'lightning.pytorch.callbacks.LearningRateMonitor', 'logging_interval': 'step'}}, 'data': {'train': 'muscle_sequence', 'valid': 'muscle_sequence', 'tokenizer_name_or_path': 'utrlm', 'cache_dir': '${path}/data', 'wrap': False, 'streaming': False}, 'model': {'name': 'small', 'type': 'ddit', 'hidden_size': 768, 'cond_dim': 128, 'length': 128, 'n_blocks': 12, 'n_heads': 12, 'scale_by_sigma': True, 'dropout': 0.1, 'tie_word_embeddings': False}, 'strategy': {'_target_': 'lightning.pytorch.strategies.DDPStrategy', 'find_unused_parameters': True}, 'noise': {'type': 'loglinear', 'sigma_min': 0.0001, 'sigma_max': 20}, 'lr_scheduler': {'_target_': 'transformers.get_constant_schedule_with_warmup', 'num_warmup_steps': 2500}}
 CONFIG
 ├── mode
 │   └── sample_eval                                                             
@@ -23,9 +23,9 @@ CONFIG
 ├── path
 │   └── /data/home/scxj534/run/wu/quantum/Energy-Diffusion-LLM-main/configs     
 ├── loader
-│   └── global_batch_size: 512                                                  
-│       eval_global_batch_size: 512                                             
-│       batch_size: 512                                                         
+│   └── global_batch_size: 32                                                   
+│       eval_global_batch_size: 32                                              
+│       batch_size: 32                                                          
 │       eval_batch_size: 1                                                      
 │       num_workers: 6                                                          
 │       pin_memory: true                                                        
@@ -53,7 +53,7 @@ CONFIG
 │       change_of_variables: false                                              
 │                                                                               
 ├── eval
-│   └── checkpoint_path: kuleshov-group/mdlm-owt                                
+│   └── checkpoint_path: /data/home/scxj534/run/wu/bakfile/checkpoints/last.ckpt
 │       disable_ema: false                                                      
 │       compute_generative_perplexity: false                                    
 │       perplexity_batch_size: 8                                                
@@ -77,11 +77,11 @@ CONFIG
 │       gradient_clip_val: 1.0                                                  
 │       precision: bf16                                                         
 │       num_sanity_val_steps: 2                                                 
-│       max_steps: 1000000                                                      
+│       max_steps: 10000                                                        
 │       log_every_n_steps: 10                                                   
 │       limit_train_batches: 1.0                                                
 │       limit_val_batches: 1.0                                                  
-│       val_check_interval: 10000                                               
+│       val_check_interval: 10                                                  
 │                                                                               
 ├── wandb
 │   └── project: text-diffusion                                                 
@@ -92,20 +92,20 @@ CONFIG
 │       id: None_1                                                              
 │       tags:                                                                   
 │       - loglinear                                                             
-│       - openwebtext                                                           
-│       - wikitext103                                                           
+│       - muscle_sequence                                                       
+│       - muscle_sequence                                                       
 │                                                                               
 ├── checkpointing
-│   └── save_dir: /data/home/scxj534/wu/quantum/Energy-Diffusion-LLM-main/      
+│   └── save_dir: /data/home/scxj534/run/wu/bakfile/                            
 │       resume_from_ckpt: true                                                  
-│       resume_ckpt_path: /data/home/scxj534/wu/quantum/Energy-Diffusion-LLM-mai
+│       resume_ckpt_path: /data/home/scxj534/run/wu/bakfile//checkpoints/last.ck
 │                                                                               
 ├── callbacks
 │   └── checkpoint_every_n_steps:                                               
 │         _target_: lightning.pytorch.callbacks.ModelCheckpoint                 
 │         save_top_k: -1                                                        
 │         save_last: true                                                       
-│         dirpath: /data/home/scxj534/wu/quantum/Energy-Diffusion-LLM-main//chec
+│         dirpath: /data/home/scxj534/run/wu/bakfile//checkpoints               
 │         verbose: true                                                         
 │         auto_insert_metric_name: false                                        
 │         every_n_train_steps: 500                                              
@@ -115,7 +115,7 @@ CONFIG
 │         mode: min                                                             
 │         save_top_k: 1                                                         
 │         save_last: false                                                      
-│         dirpath: /data/home/scxj534/wu/quantum/Energy-Diffusion-LLM-main//chec
+│         dirpath: /data/home/scxj534/run/wu/bakfile//checkpoints               
 │         filename: best                                                        
 │         auto_insert_metric_name: false                                        
 │         verbose: true                                                         
@@ -124,11 +124,11 @@ CONFIG
 │         logging_interval: step                                                
 │                                                                               
 ├── data
-│   └── train: openwebtext                                                      
-│       valid: wikitext103                                                      
+│   └── train: muscle_sequence                                                  
+│       valid: muscle_sequence                                                  
 │       tokenizer_name_or_path: utrlm                                           
 │       cache_dir: /data/home/scxj534/run/wu/quantum/Energy-Diffusion-LLM-main/c
-│       wrap: true                                                              
+│       wrap: false                                                             
 │       streaming: false                                                        
 │                                                                               
 ├── model
@@ -136,7 +136,7 @@ CONFIG
 │       type: ddit                                                              
 │       hidden_size: 768                                                        
 │       cond_dim: 128                                                           
-│       length: 1024                                                            
+│       length: 128                                                             
 │       n_blocks: 12                                                            
 │       n_heads: 12                                                             
 │       scale_by_sigma: true                                                    
@@ -145,7 +145,7 @@ CONFIG
 │                                                                               
 ├── strategy
 │   └── _target_: lightning.pytorch.strategies.DDPStrategy                      
-│       find_unused_parameters: false                                           
+│       find_unused_parameters: true                                            
 │                                                                               
 ├── noise
 │   └── type: loglinear                                                         
@@ -156,11 +156,21 @@ CONFIG
     └── _target_: transformers.get_constant_schedule_with_warmup                
         num_warmup_steps: 2500                                                  
                                                                                 
-[2026-04-02 08:34:32,016][__main__][INFO] - Generating samples.
-info before config_dif: {'mode': 'sample_eval', 'diffusion': 'absorbing_state', 'backbone': 'utrlm', 'ebm_backbone': 'utrlm', 'parameterization': 'subs', 'time_conditioning': False, 'T': 0, 'subs_masking': False, 'seed': 1, 'path': '/data/home/scxj534/run/wu/quantum/Energy-Diffusion-LLM-main/configs', 'loader': {'global_batch_size': 512, 'eval_global_batch_size': '${.global_batch_size}', 'batch_size': '${div_up:${.global_batch_size}, ${eval:${trainer.devices} * ${trainer.num_nodes}}}', 'eval_batch_size': 1, 'num_workers': '${eval:"len(__import__(\'os\').sched_getaffinity(0))"}', 'pin_memory': True}, 'sampling': {'predictor': 'ddpm_cache', 'steps': 128, 'noise_removal': True, 'num_sample_batches': 2, 'num_sample_log': 2, 'semi_ar': False, 'stride_length': 1, 'num_strides': 1, 'is_size': 2, 'is_start': 0.6, 'is_end': 0.4, 'is_temp': 1, 'ar_carry_over': True}, 'training': {'ema': 0.9999, 'antithetic_sampling': True, 'importance_sampling': False, 'sampling_eps': 0.001, 'change_of_variables': False}, 'eval': {'checkpoint_path': 'kuleshov-group/mdlm-owt', 'disable_ema': False, 'compute_generative_perplexity': False, 'perplexity_batch_size': 8, 'compute_perplexity_on_sanity': False, 'gen_ppl_eval_model_name_or_path': 'gpt2', 'generate_samples': True}, 'optim': {'weight_decay': 0, 'lr': 0.0003, 'beta1': 0.9, 'beta2': 0.999, 'eps': 1e-08}, 'trainer': {'_target_': 'lightning.Trainer', 'accelerator': 'cuda', 'num_nodes': 1, 'devices': 1, 'accumulate_grad_batches': '${div_up:${loader.global_batch_size}, ${eval:${trainer.devices} * ${loader.batch_size} * ${trainer.num_nodes}}}', 'gradient_clip_val': 1.0, 'precision': 'bf16', 'num_sanity_val_steps': 2, 'max_steps': 1000000, 'log_every_n_steps': 10, 'limit_train_batches': 1.0, 'limit_val_batches': 1.0, 'val_check_interval': 10000}, 'wandb': {'project': 'text-diffusion', 'notes': 'Mulan for text', 'group': None, 'job_type': None, 'name': None, 'id': '${.name}_${seed}', 'tags': ['${noise.type}', '${data.train}', '${data.valid}']}, 'checkpointing': {'save_dir': '/data/home/scxj534/wu/quantum/Energy-Diffusion-LLM-main/', 'resume_from_ckpt': True, 'resume_ckpt_path': '${.save_dir}/checkpoints/last.ckpt'}, 'callbacks': {'checkpoint_every_n_steps': {'_target_': 'lightning.pytorch.callbacks.ModelCheckpoint', 'save_top_k': -1, 'save_last': True, 'dirpath': '${checkpointing.save_dir}/checkpoints', 'verbose': True, 'auto_insert_metric_name': False, 'every_n_train_steps': 500}, 'checkpoint_monitor': {'_target_': 'lightning.pytorch.callbacks.ModelCheckpoint', 'monitor': 'val/nll', 'mode': 'min', 'save_top_k': 1, 'save_last': False, 'dirpath': '${checkpointing.save_dir}/checkpoints', 'filename': 'best', 'auto_insert_metric_name': False, 'verbose': True}, 'learning_rate_monitor': {'_target_': 'lightning.pytorch.callbacks.LearningRateMonitor', 'logging_interval': 'step'}}, 'data': {'train': 'openwebtext', 'valid': 'wikitext103', 'tokenizer_name_or_path': 'utrlm', 'cache_dir': '${path}/data', 'wrap': True, 'streaming': False}, 'model': {'name': 'small', 'type': 'ddit', 'hidden_size': 768, 'cond_dim': 128, 'length': 1024, 'n_blocks': 12, 'n_heads': 12, 'scale_by_sigma': True, 'dropout': 0.1, 'tie_word_embeddings': False}, 'strategy': {'_target_': 'lightning.pytorch.strategies.DDPStrategy', 'find_unused_parameters': False}, 'noise': {'type': 'loglinear', 'sigma_min': 0.0001, 'sigma_max': 20}, 'lr_scheduler': {'_target_': 'transformers.get_constant_schedule_with_warmup', 'num_warmup_steps': 2500}}
-info after config_dif: {'mode': 'sample_eval', 'diffusion': 'absorbing_state', 'backbone': 'utrlm', 'ebm_backbone': 'utrlm', 'parameterization': 'subs', 'time_conditioning': False, 'T': 0, 'subs_masking': False, 'seed': 1, 'path': '/data/home/scxj534/run/wu/quantum/Energy-Diffusion-LLM-main/configs', 'loader': {'global_batch_size': 512, 'eval_global_batch_size': '${.global_batch_size}', 'batch_size': '${div_up:${.global_batch_size}, ${eval:${trainer.devices} * ${trainer.num_nodes}}}', 'eval_batch_size': 1, 'num_workers': '${eval:"len(__import__(\'os\').sched_getaffinity(0))"}', 'pin_memory': True}, 'sampling': {'predictor': 'ddpm_cache', 'steps': 128, 'noise_removal': True, 'num_sample_batches': 2, 'num_sample_log': 2, 'semi_ar': False, 'stride_length': 1, 'num_strides': 1, 'is_size': 2, 'is_start': 0.6, 'is_end': 0.4, 'is_temp': 1, 'ar_carry_over': True}, 'training': {'ema': 0.9999, 'antithetic_sampling': True, 'importance_sampling': False, 'sampling_eps': 0.001, 'change_of_variables': False}, 'eval': {'checkpoint_path': 'kuleshov-group/mdlm-owt', 'disable_ema': False, 'compute_generative_perplexity': False, 'perplexity_batch_size': 8, 'compute_perplexity_on_sanity': False, 'gen_ppl_eval_model_name_or_path': 'gpt2', 'generate_samples': True}, 'optim': {'weight_decay': 0, 'lr': 0.0003, 'beta1': 0.9, 'beta2': 0.999, 'eps': 1e-08}, 'trainer': {'_target_': 'lightning.Trainer', 'accelerator': 'cuda', 'num_nodes': 1, 'devices': 1, 'accumulate_grad_batches': '${div_up:${loader.global_batch_size}, ${eval:${trainer.devices} * ${loader.batch_size} * ${trainer.num_nodes}}}', 'gradient_clip_val': 1.0, 'precision': 'bf16', 'num_sanity_val_steps': 2, 'max_steps': 1000000, 'log_every_n_steps': 10, 'limit_train_batches': 1.0, 'limit_val_batches': 1.0, 'val_check_interval': 10000}, 'wandb': {'project': 'text-diffusion', 'notes': 'Mulan for text', 'group': None, 'job_type': None, 'name': None, 'id': '${.name}_${seed}', 'tags': ['${noise.type}', '${data.train}', '${data.valid}']}, 'checkpointing': {'save_dir': '/data/home/scxj534/wu/quantum/Energy-Diffusion-LLM-main/', 'resume_from_ckpt': True, 'resume_ckpt_path': '${.save_dir}/checkpoints/last.ckpt'}, 'callbacks': {'checkpoint_every_n_steps': {'_target_': 'lightning.pytorch.callbacks.ModelCheckpoint', 'save_top_k': -1, 'save_last': True, 'dirpath': '${checkpointing.save_dir}/checkpoints', 'verbose': True, 'auto_insert_metric_name': False, 'every_n_train_steps': 500}, 'checkpoint_monitor': {'_target_': 'lightning.pytorch.callbacks.ModelCheckpoint', 'monitor': 'val/nll', 'mode': 'min', 'save_top_k': 1, 'save_last': False, 'dirpath': '${checkpointing.save_dir}/checkpoints', 'filename': 'best', 'auto_insert_metric_name': False, 'verbose': True}, 'learning_rate_monitor': {'_target_': 'lightning.pytorch.callbacks.LearningRateMonitor', 'logging_interval': 'step'}}, 'data': {'train': 'openwebtext', 'valid': 'wikitext103', 'tokenizer_name_or_path': 'utrlm', 'cache_dir': '${path}/data', 'wrap': True, 'streaming': False}, 'model': {'name': 'small', 'type': 'ddit', 'hidden_size': 768, 'cond_dim': 128, 'length': 1024, 'n_blocks': 12, 'n_heads': 12, 'scale_by_sigma': True, 'dropout': 0.1, 'tie_word_embeddings': False}, 'strategy': {'_target_': 'lightning.pytorch.strategies.DDPStrategy', 'find_unused_parameters': False}, 'noise': {'type': 'loglinear', 'sigma_min': 0.0001, 'sigma_max': 20}, 'lr_scheduler': {'_target_': 'transformers.get_constant_schedule_with_warmup', 'num_warmup_steps': 2500}}
+[2026-04-08 15:45:55,488][__main__][INFO] - Generating samples.
+info before config_dif: {'mode': 'sample_eval', 'diffusion': 'absorbing_state', 'backbone': 'utrlm', 'ebm_backbone': 'utrlm', 'parameterization': 'subs', 'time_conditioning': False, 'T': 0, 'subs_masking': False, 'seed': 1, 'path': '/data/home/scxj534/run/wu/quantum/Energy-Diffusion-LLM-main/configs', 'loader': {'global_batch_size': 32, 'eval_global_batch_size': '${.global_batch_size}', 'batch_size': '${div_up:${.global_batch_size}, ${eval:${trainer.devices} * ${trainer.num_nodes}}}', 'eval_batch_size': 1, 'num_workers': '${eval:"len(__import__(\'os\').sched_getaffinity(0))"}', 'pin_memory': True}, 'sampling': {'predictor': 'ddpm_cache', 'steps': 128, 'noise_removal': True, 'num_sample_batches': 2, 'num_sample_log': 2, 'semi_ar': False, 'stride_length': 1, 'num_strides': 1, 'is_size': 2, 'is_start': 0.6, 'is_end': 0.4, 'is_temp': 1, 'ar_carry_over': True}, 'training': {'ema': 0.9999, 'antithetic_sampling': True, 'importance_sampling': False, 'sampling_eps': 0.001, 'change_of_variables': False}, 'eval': {'checkpoint_path': '/data/home/scxj534/run/wu/bakfile/checkpoints/last.ckpt', 'disable_ema': False, 'compute_generative_perplexity': False, 'perplexity_batch_size': 8, 'compute_perplexity_on_sanity': False, 'gen_ppl_eval_model_name_or_path': 'gpt2', 'generate_samples': True}, 'optim': {'weight_decay': 0, 'lr': 0.0003, 'beta1': 0.9, 'beta2': 0.999, 'eps': 1e-08}, 'trainer': {'_target_': 'lightning.Trainer', 'accelerator': 'cuda', 'num_nodes': 1, 'devices': 1, 'accumulate_grad_batches': '${div_up:${loader.global_batch_size}, ${eval:${trainer.devices} * ${loader.batch_size} * ${trainer.num_nodes}}}', 'gradient_clip_val': 1.0, 'precision': 'bf16', 'num_sanity_val_steps': 2, 'max_steps': 10000, 'log_every_n_steps': 10, 'limit_train_batches': 1.0, 'limit_val_batches': 1.0, 'val_check_interval': 10}, 'wandb': {'project': 'text-diffusion', 'notes': 'Mulan for text', 'group': None, 'job_type': None, 'name': None, 'id': '${.name}_${seed}', 'tags': ['${noise.type}', '${data.train}', '${data.valid}']}, 'checkpointing': {'save_dir': '/data/home/scxj534/run/wu/bakfile/', 'resume_from_ckpt': True, 'resume_ckpt_path': '${.save_dir}/checkpoints/last.ckpt'}, 'callbacks': {'checkpoint_every_n_steps': {'_target_': 'lightning.pytorch.callbacks.ModelCheckpoint', 'save_top_k': -1, 'save_last': True, 'dirpath': '${checkpointing.save_dir}/checkpoints', 'verbose': True, 'auto_insert_metric_name': False, 'every_n_train_steps': 500}, 'checkpoint_monitor': {'_target_': 'lightning.pytorch.callbacks.ModelCheckpoint', 'monitor': 'val/nll', 'mode': 'min', 'save_top_k': 1, 'save_last': False, 'dirpath': '${checkpointing.save_dir}/checkpoints', 'filename': 'best', 'auto_insert_metric_name': False, 'verbose': True}, 'learning_rate_monitor': {'_target_': 'lightning.pytorch.callbacks.LearningRateMonitor', 'logging_interval': 'step'}}, 'data': {'train': 'muscle_sequence', 'valid': 'muscle_sequence', 'tokenizer_name_or_path': 'utrlm', 'cache_dir': '${path}/data', 'wrap': False, 'streaming': False}, 'model': {'name': 'small', 'type': 'ddit', 'hidden_size': 768, 'cond_dim': 128, 'length': 128, 'n_blocks': 12, 'n_heads': 12, 'scale_by_sigma': True, 'dropout': 0.1, 'tie_word_embeddings': False}, 'strategy': {'_target_': 'lightning.pytorch.strategies.DDPStrategy', 'find_unused_parameters': True}, 'noise': {'type': 'loglinear', 'sigma_min': 0.0001, 'sigma_max': 20}, 'lr_scheduler': {'_target_': 'transformers.get_constant_schedule_with_warmup', 'num_warmup_steps': 2500}}
+info after config_dif: {'mode': 'sample_eval', 'diffusion': 'absorbing_state', 'backbone': 'utrlm', 'ebm_backbone': 'utrlm', 'parameterization': 'subs', 'time_conditioning': False, 'T': 0, 'subs_masking': False, 'seed': 1, 'path': '/data/home/scxj534/run/wu/quantum/Energy-Diffusion-LLM-main/configs', 'loader': {'global_batch_size': 32, 'eval_global_batch_size': '${.global_batch_size}', 'batch_size': '${div_up:${.global_batch_size}, ${eval:${trainer.devices} * ${trainer.num_nodes}}}', 'eval_batch_size': 1, 'num_workers': '${eval:"len(__import__(\'os\').sched_getaffinity(0))"}', 'pin_memory': True}, 'sampling': {'predictor': 'ddpm_cache', 'steps': 128, 'noise_removal': True, 'num_sample_batches': 2, 'num_sample_log': 2, 'semi_ar': False, 'stride_length': 1, 'num_strides': 1, 'is_size': 2, 'is_start': 0.6, 'is_end': 0.4, 'is_temp': 1, 'ar_carry_over': True}, 'training': {'ema': 0.9999, 'antithetic_sampling': True, 'importance_sampling': False, 'sampling_eps': 0.001, 'change_of_variables': False}, 'eval': {'checkpoint_path': '/data/home/scxj534/run/wu/bakfile/checkpoints/last.ckpt', 'disable_ema': False, 'compute_generative_perplexity': False, 'perplexity_batch_size': 8, 'compute_perplexity_on_sanity': False, 'gen_ppl_eval_model_name_or_path': 'gpt2', 'generate_samples': True}, 'optim': {'weight_decay': 0, 'lr': 0.0003, 'beta1': 0.9, 'beta2': 0.999, 'eps': 1e-08}, 'trainer': {'_target_': 'lightning.Trainer', 'accelerator': 'cuda', 'num_nodes': 1, 'devices': 1, 'accumulate_grad_batches': '${div_up:${loader.global_batch_size}, ${eval:${trainer.devices} * ${loader.batch_size} * ${trainer.num_nodes}}}', 'gradient_clip_val': 1.0, 'precision': 'bf16', 'num_sanity_val_steps': 2, 'max_steps': 10000, 'log_every_n_steps': 10, 'limit_train_batches': 1.0, 'limit_val_batches': 1.0, 'val_check_interval': 10}, 'wandb': {'project': 'text-diffusion', 'notes': 'Mulan for text', 'group': None, 'job_type': None, 'name': None, 'id': '${.name}_${seed}', 'tags': ['${noise.type}', '${data.train}', '${data.valid}']}, 'checkpointing': {'save_dir': '/data/home/scxj534/run/wu/bakfile/', 'resume_from_ckpt': True, 'resume_ckpt_path': '${.save_dir}/checkpoints/last.ckpt'}, 'callbacks': {'checkpoint_every_n_steps': {'_target_': 'lightning.pytorch.callbacks.ModelCheckpoint', 'save_top_k': -1, 'save_last': True, 'dirpath': '${checkpointing.save_dir}/checkpoints', 'verbose': True, 'auto_insert_metric_name': False, 'every_n_train_steps': 500}, 'checkpoint_monitor': {'_target_': 'lightning.pytorch.callbacks.ModelCheckpoint', 'monitor': 'val/nll', 'mode': 'min', 'save_top_k': 1, 'save_last': False, 'dirpath': '${checkpointing.save_dir}/checkpoints', 'filename': 'best', 'auto_insert_metric_name': False, 'verbose': True}, 'learning_rate_monitor': {'_target_': 'lightning.pytorch.callbacks.LearningRateMonitor', 'logging_interval': 'step'}}, 'data': {'train': 'muscle_sequence', 'valid': 'muscle_sequence', 'tokenizer_name_or_path': 'utrlm', 'cache_dir': '${path}/data', 'wrap': False, 'streaming': False}, 'model': {'name': 'small', 'type': 'ddit', 'hidden_size': 768, 'cond_dim': 128, 'length': 128, 'n_blocks': 12, 'n_heads': 12, 'scale_by_sigma': True, 'dropout': 0.1, 'tie_word_embeddings': False}, 'strategy': {'_target_': 'lightning.pytorch.strategies.DDPStrategy', 'find_unused_parameters': True}, 'noise': {'type': 'loglinear', 'sigma_min': 0.0001, 'sigma_max': 20}, 'lr_scheduler': {'_target_': 'transformers.get_constant_schedule_with_warmup', 'num_warmup_steps': 2500}}
 info: utrlm
-info: kuleshov-group/mdlm-owt
+info: /data/home/scxj534/run/wu/bakfile/checkpoints/last.ckpt
+self.lm_head[0].bias: Parameter containing:
+tensor([-0.0475,  0.0377, -0.0074, -0.0674, -0.0466, -0.0302, -0.0574,  0.0728,
+        -0.0652,  0.0165, -0.0117, -0.0840,  0.0344, -0.0135,  0.0382,  0.0163,
+        -0.0604, -0.0652,  0.0804, -0.0303, -0.0284,  0.0423,  0.0754, -0.0335,
+        -0.0753, -0.0073,  0.0615, -0.0769,  0.0732, -0.0511,  0.0445,  0.0838,
+         0.0037, -0.0585,  0.0564,  0.0856,  0.0624, -0.0124,  0.0582, -0.0712,
+         0.0468, -0.0314, -0.0825,  0.0352, -0.0458, -0.0466,  0.0024,  0.0183,
+        -0.0764, -0.0340, -0.0074, -0.0652, -0.0478,  0.0534,  0.0817, -0.0844,
+        -0.0609, -0.0033,  0.0361, -0.0098,  0.0374, -0.0737, -0.0523,  0.0139],
+       requires_grad=True)
 self.backbone: UtrLmModel(
   (embeddings): UtrLmEmbeddings(
     (word_embeddings): Embedding(26, 128, padding_idx=0)
@@ -324,6 +334,15 @@ model: EBM(
       )
     )
   )
+  (lm_head): Sequential(
+    (0): Linear(in_features=128, out_features=64, bias=True)
+    (1): GELU(approximate='none')
+    (2): Dropout(p=0.1, inplace=False)
+    (3): Linear(in_features=64, out_features=32, bias=True)
+    (4): GELU(approximate='none')
+    (5): Dropout(p=0.1, inplace=False)
+    (6): Linear(in_features=32, out_features=10, bias=True)
+  )
   (softplus): Softplus(beta=1.0, threshold=20.0)
   (train_metrics): MetricCollection(
     (bpd): BPD()
@@ -387,3 +406,1568 @@ model: EBM(
     )
   )
 )
+model.lm_head[0].bias: Parameter containing:
+tensor([-0.0574,  0.0728, -0.0652,  0.0165, -0.0117, -0.0840,  0.0344, -0.0135,
+         0.0382,  0.0163, -0.0604, -0.0652,  0.0804, -0.0303, -0.0284,  0.0423,
+         0.0754, -0.0335, -0.0753, -0.0073,  0.0615, -0.0769,  0.0732, -0.0511,
+         0.0445,  0.0838,  0.0037, -0.0585,  0.0564,  0.0856,  0.0624, -0.0124,
+         0.0582, -0.0712,  0.0468, -0.0314, -0.0825,  0.0352, -0.0458, -0.0466,
+         0.0024,  0.0183, -0.0764, -0.0340, -0.0074, -0.0652, -0.0478,  0.0534,
+         0.0817, -0.0844, -0.0609, -0.0033,  0.0361, -0.0098,  0.0374, -0.0737,
+        -0.0523,  0.0139,  0.0420, -0.0617, -0.0566, -0.0741, -0.0296,  0.0025],
+       device='cuda:0', requires_grad=True)
+k: 2
+x.repeat(k,1): tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 4, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 4, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         4, 8, 4, 9, 8, 4, 4, 8, 4, 4, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 4, 4, 4, 4, 4, 3, 4, 9, 2, 4, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5],
+        [7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 4, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 4, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         4, 8, 4, 9, 8, 4, 4, 8, 4, 4, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 4, 4, 4, 4, 4, 3, 4, 9, 2, 4, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+t.repeat(k,1): tensor([[0.5938],
+        [0.5938]], device='cuda:0')
+x0_samples: tensor([[7, 2, 3, 6, 7, 1, 1, 6, 5, 5, 8, 3, 8, 2, 5, 1, 0, 2, 6, 5, 3, 7, 3, 5,
+         5, 2, 9, 5, 6, 9, 8, 2, 5, 9, 3, 0, 3, 7, 1, 5, 1, 5, 2, 8, 1, 5, 3, 2,
+         0, 7, 1, 1, 1, 3, 7, 2, 5, 8, 1, 2, 2, 0, 5, 9, 7, 1, 8, 1, 5, 1, 7, 0,
+         2, 8, 7, 9, 8, 2, 2, 8, 8, 3, 9, 3, 7, 2, 2, 3, 2, 0, 6, 2, 2, 8, 8, 5,
+         1, 2, 1, 5, 6, 8, 6, 3, 3, 9, 2, 1, 0, 0, 9, 8, 5, 6, 1, 9, 0, 5, 5, 6,
+         9, 6, 2, 3, 6, 0, 0, 5],
+        [7, 8, 3, 6, 7, 1, 8, 9, 5, 8, 6, 3, 9, 2, 5, 1, 0, 2, 0, 5, 3, 6, 3, 0,
+         5, 6, 9, 8, 1, 9, 8, 5, 8, 9, 3, 0, 3, 7, 5, 5, 5, 1, 2, 3, 8, 5, 5, 2,
+         0, 7, 1, 1, 1, 3, 9, 2, 7, 2, 1, 2, 6, 7, 0, 9, 6, 1, 8, 1, 5, 5, 9, 0,
+         1, 8, 1, 9, 8, 5, 3, 8, 8, 6, 9, 3, 7, 2, 2, 3, 2, 5, 1, 0, 6, 9, 2, 7,
+         6, 2, 0, 8, 9, 5, 2, 3, 5, 9, 2, 8, 0, 0, 9, 6, 2, 5, 7, 9, 0, 0, 7, 6,
+         9, 6, 2, 8, 6, 0, 7, 5]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0913, 0.1326, 0.1094,  ..., 0.1032, 0.1303, 0.1150],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0880, 0.1216, 0.1176,  ..., 0.1125, 0.1287, 0.1172],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0913, 0.1326, 0.1094,  ..., 0.1032, 0.1303, 0.1150],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0880, 0.1216, 0.1176,  ..., 0.1125, 0.1287, 0.1172],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[29.8738],
+        [29.1553]], device='cuda:0')
+importance_weights: tensor([[0.6723, 0.3277]], device='cuda:0')
+x0_index: tensor([0], device='cuda:0')
+x_next: tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 4, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 4, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         4, 8, 4, 9, 8, 4, 4, 8, 4, 4, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 4, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 4, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 4, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         4, 8, 4, 9, 8, 4, 4, 8, 4, 4, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 4, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5],
+        [7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 4, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 4, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         4, 8, 4, 9, 8, 4, 4, 8, 4, 4, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 4, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+t.repeat(k,1): tensor([[0.5859],
+        [0.5859]], device='cuda:0')
+x0_samples: tensor([[7, 8, 3, 6, 7, 1, 3, 6, 5, 6, 5, 8, 8, 2, 5, 1, 0, 2, 8, 5, 3, 2, 3, 8,
+         5, 7, 9, 1, 1, 9, 8, 3, 5, 1, 3, 0, 3, 7, 5, 5, 5, 0, 1, 5, 3, 2, 5, 2,
+         0, 7, 1, 1, 9, 3, 3, 6, 3, 5, 1, 2, 2, 0, 2, 1, 7, 1, 0, 7, 5, 6, 8, 0,
+         8, 8, 2, 9, 8, 8, 8, 8, 5, 2, 9, 3, 7, 2, 2, 3, 2, 7, 1, 7, 8, 1, 6, 3,
+         9, 2, 0, 6, 8, 8, 9, 3, 7, 9, 2, 1, 0, 0, 9, 8, 9, 3, 6, 9, 9, 6, 7, 6,
+         9, 6, 2, 7, 6, 0, 1, 5],
+        [7, 9, 3, 6, 7, 1, 2, 3, 5, 3, 8, 1, 7, 2, 5, 1, 0, 2, 6, 5, 3, 7, 3, 8,
+         5, 6, 9, 1, 1, 9, 8, 5, 3, 8, 3, 0, 3, 7, 3, 5, 3, 0, 0, 9, 1, 0, 6, 2,
+         0, 7, 1, 1, 5, 3, 8, 9, 2, 3, 1, 2, 3, 6, 5, 8, 1, 1, 8, 6, 5, 1, 1, 0,
+         6, 8, 2, 9, 8, 3, 8, 8, 6, 8, 1, 3, 7, 2, 2, 3, 2, 1, 9, 7, 9, 8, 5, 8,
+         8, 2, 9, 1, 7, 1, 6, 3, 2, 9, 2, 1, 0, 0, 9, 6, 8, 1, 1, 9, 0, 3, 8, 6,
+         9, 6, 2, 2, 6, 0, 2, 5]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0902, 0.1271, 0.1117,  ..., 0.1060, 0.1283, 0.1141],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0901, 0.1312, 0.1116,  ..., 0.1166, 0.1263, 0.1158],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0902, 0.1271, 0.1117,  ..., 0.1060, 0.1283, 0.1141],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0901, 0.1312, 0.1116,  ..., 0.1166, 0.1263, 0.1158],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[31.8474],
+        [35.6829]], device='cuda:0')
+importance_weights: tensor([[0.0211, 0.9789]], device='cuda:0')
+x0_index: tensor([1], device='cuda:0')
+x_next: tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 4, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 4, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 4, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 4, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 4, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 4, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 4, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 4, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5],
+        [7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 4, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 4, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 4, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 4, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+t.repeat(k,1): tensor([[0.5781],
+        [0.5781]], device='cuda:0')
+x0_samples: tensor([[7, 9, 3, 6, 7, 1, 6, 0, 5, 5, 7, 7, 7, 2, 5, 1, 0, 2, 2, 5, 3, 6, 3, 2,
+         5, 9, 9, 5, 7, 9, 8, 0, 7, 3, 3, 0, 3, 7, 7, 5, 0, 7, 5, 5, 0, 0, 5, 2,
+         0, 7, 1, 1, 8, 3, 8, 5, 7, 8, 1, 2, 2, 7, 3, 9, 3, 1, 5, 5, 5, 2, 2, 0,
+         6, 8, 9, 9, 8, 3, 3, 8, 2, 1, 2, 3, 7, 2, 2, 3, 2, 9, 1, 5, 6, 5, 2, 6,
+         0, 2, 3, 7, 7, 6, 6, 3, 6, 9, 2, 1, 0, 0, 9, 7, 6, 5, 9, 9, 6, 8, 0, 6,
+         9, 6, 2, 7, 6, 0, 8, 5],
+        [7, 7, 3, 6, 7, 1, 7, 8, 5, 0, 9, 9, 2, 2, 5, 1, 0, 2, 8, 5, 3, 1, 3, 9,
+         5, 9, 9, 9, 5, 9, 8, 8, 5, 0, 3, 0, 3, 7, 9, 5, 3, 0, 2, 2, 7, 2, 9, 2,
+         0, 7, 1, 1, 6, 3, 0, 5, 3, 5, 1, 2, 6, 1, 3, 3, 5, 1, 6, 6, 5, 6, 9, 0,
+         6, 8, 8, 9, 8, 1, 3, 8, 2, 6, 9, 3, 7, 2, 2, 3, 2, 6, 8, 2, 2, 2, 2, 6,
+         9, 2, 1, 7, 9, 1, 6, 3, 0, 9, 2, 1, 0, 0, 9, 5, 9, 1, 8, 9, 1, 2, 9, 6,
+         9, 6, 2, 3, 6, 0, 1, 5]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0862, 0.1305, 0.1153,  ..., 0.1066, 0.1427, 0.1057],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0931, 0.1264, 0.1156,  ..., 0.1049, 0.1187, 0.1207],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0862, 0.1305, 0.1153,  ..., 0.1066, 0.1427, 0.1057],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0931, 0.1264, 0.1156,  ..., 0.1049, 0.1187, 0.1207],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[32.2217],
+        [30.4133]], device='cuda:0')
+importance_weights: tensor([[0.8592, 0.1408]], device='cuda:0')
+x0_index: tensor([0], device='cuda:0')
+x_next: tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 4, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 4, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 4, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 4, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 4, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 4, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5],
+        [7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 4, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 4, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 4, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+t.repeat(k,1): tensor([[0.5703],
+        [0.5703]], device='cuda:0')
+x0_samples: tensor([[7, 2, 3, 6, 7, 1, 8, 0, 5, 8, 2, 3, 6, 2, 5, 1, 0, 2, 0, 5, 3, 6, 3, 8,
+         5, 7, 9, 3, 9, 9, 8, 3, 9, 8, 3, 0, 3, 7, 0, 5, 8, 1, 2, 9, 8, 7, 0, 2,
+         0, 7, 1, 1, 2, 3, 6, 6, 6, 6, 1, 2, 7, 8, 7, 3, 8, 1, 2, 7, 5, 2, 0, 0,
+         6, 8, 1, 9, 8, 9, 0, 8, 1, 5, 3, 3, 7, 2, 2, 3, 2, 6, 8, 8, 5, 6, 2, 0,
+         3, 2, 3, 2, 9, 9, 8, 3, 5, 9, 2, 1, 0, 0, 9, 5, 1, 9, 2, 9, 1, 1, 7, 6,
+         9, 6, 2, 9, 6, 0, 2, 5],
+        [7, 3, 3, 6, 7, 1, 0, 5, 5, 8, 9, 0, 1, 2, 5, 1, 0, 2, 2, 5, 3, 8, 3, 9,
+         5, 2, 9, 2, 5, 9, 8, 5, 6, 2, 3, 0, 3, 7, 7, 5, 7, 3, 5, 6, 8, 9, 8, 2,
+         0, 7, 1, 1, 9, 3, 9, 5, 9, 6, 1, 2, 8, 8, 3, 1, 2, 1, 9, 6, 5, 9, 6, 0,
+         6, 8, 5, 9, 8, 2, 2, 8, 3, 3, 7, 3, 7, 2, 2, 3, 2, 3, 9, 1, 0, 8, 3, 3,
+         9, 2, 3, 6, 1, 7, 1, 3, 7, 9, 2, 1, 0, 0, 9, 1, 7, 2, 2, 9, 8, 8, 8, 6,
+         9, 6, 2, 2, 6, 0, 0, 5]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0892, 0.1234, 0.1188,  ..., 0.1075, 0.1385, 0.1102],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0938, 0.1250, 0.1143,  ..., 0.1040, 0.1223, 0.1184],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0892, 0.1234, 0.1188,  ..., 0.1075, 0.1385, 0.1102],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0938, 0.1250, 0.1143,  ..., 0.1040, 0.1223, 0.1184],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[28.0546],
+        [30.6749]], device='cuda:0')
+importance_weights: tensor([[0.0678, 0.9322]], device='cuda:0')
+x0_index: tensor([1], device='cuda:0')
+x_next: tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 4, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 4, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 4, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 4, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 4, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5],
+        [7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 4, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 4, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+t.repeat(k,1): tensor([[0.5469],
+        [0.5469]], device='cuda:0')
+x0_samples: tensor([[7, 7, 3, 6, 7, 1, 1, 6, 5, 1, 6, 2, 5, 2, 5, 1, 0, 2, 6, 5, 3, 7, 3, 0,
+         5, 3, 9, 8, 3, 9, 8, 6, 3, 8, 3, 0, 3, 7, 9, 5, 9, 8, 7, 5, 9, 1, 6, 2,
+         0, 7, 1, 1, 8, 3, 2, 2, 2, 0, 1, 2, 8, 9, 7, 1, 7, 1, 8, 7, 5, 8, 6, 0,
+         6, 8, 2, 9, 8, 5, 9, 8, 9, 3, 7, 3, 7, 2, 2, 3, 2, 1, 0, 3, 8, 5, 6, 5,
+         9, 2, 3, 2, 7, 3, 9, 3, 6, 9, 2, 1, 0, 0, 9, 5, 0, 0, 7, 9, 6, 0, 9, 6,
+         9, 6, 2, 1, 6, 0, 6, 5],
+        [7, 9, 3, 6, 7, 1, 7, 8, 5, 3, 6, 9, 6, 2, 5, 1, 0, 2, 0, 5, 3, 1, 3, 5,
+         5, 6, 9, 8, 1, 9, 8, 9, 2, 8, 3, 0, 3, 7, 8, 5, 7, 6, 6, 7, 5, 5, 8, 2,
+         0, 7, 1, 1, 0, 3, 8, 9, 6, 2, 1, 2, 7, 2, 9, 6, 9, 1, 8, 5, 5, 9, 9, 0,
+         6, 8, 6, 9, 8, 8, 5, 8, 0, 3, 9, 3, 7, 2, 2, 3, 2, 1, 8, 7, 8, 3, 2, 1,
+         0, 2, 3, 1, 1, 0, 0, 3, 0, 9, 2, 1, 0, 0, 9, 9, 8, 7, 6, 9, 1, 5, 9, 6,
+         9, 6, 2, 2, 6, 0, 7, 5]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0864, 0.1308, 0.1182,  ..., 0.1067, 0.1367, 0.1093],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0937, 0.1293, 0.1152,  ..., 0.1073, 0.1197, 0.1181],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0864, 0.1308, 0.1182,  ..., 0.1067, 0.1367, 0.1093],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0937, 0.1293, 0.1152,  ..., 0.1073, 0.1197, 0.1181],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[30.0889],
+        [26.6004]], device='cuda:0')
+importance_weights: tensor([[0.9704, 0.0296]], device='cuda:0')
+x0_index: tensor([0], device='cuda:0')
+x_next: tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 4, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 4, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 4, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5],
+        [7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 4, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+t.repeat(k,1): tensor([[0.5234],
+        [0.5234]], device='cuda:0')
+x0_samples: tensor([[7, 5, 3, 6, 7, 1, 8, 2, 5, 9, 5, 5, 2, 2, 5, 1, 0, 2, 6, 5, 3, 7, 3, 6,
+         5, 1, 9, 2, 2, 9, 8, 8, 8, 2, 3, 0, 3, 7, 9, 5, 5, 2, 6, 6, 2, 6, 7, 2,
+         0, 7, 1, 1, 2, 3, 8, 7, 2, 9, 1, 2, 1, 6, 0, 1, 5, 1, 9, 2, 5, 7, 1, 0,
+         6, 8, 2, 9, 8, 3, 3, 8, 1, 3, 9, 3, 7, 2, 2, 3, 2, 3, 1, 6, 5, 8, 9, 7,
+         6, 2, 3, 7, 1, 0, 9, 3, 2, 9, 2, 1, 0, 0, 9, 8, 3, 5, 9, 9, 9, 6, 5, 6,
+         9, 6, 2, 1, 6, 0, 7, 5],
+        [7, 1, 3, 6, 7, 1, 9, 9, 5, 8, 6, 6, 0, 2, 5, 1, 0, 2, 7, 5, 3, 3, 3, 2,
+         5, 2, 9, 5, 1, 9, 8, 8, 1, 5, 3, 0, 3, 7, 1, 5, 8, 0, 3, 1, 6, 2, 7, 2,
+         0, 7, 1, 1, 2, 3, 1, 3, 2, 7, 1, 2, 8, 2, 6, 9, 8, 1, 8, 6, 5, 8, 9, 0,
+         6, 8, 8, 9, 8, 2, 8, 8, 2, 3, 8, 3, 7, 2, 2, 3, 2, 8, 2, 3, 9, 1, 5, 0,
+         8, 2, 3, 0, 9, 8, 1, 3, 1, 9, 2, 1, 0, 0, 9, 3, 5, 1, 8, 9, 8, 2, 3, 6,
+         9, 6, 2, 9, 6, 0, 8, 5]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0892, 0.1332, 0.1136,  ..., 0.1038, 0.1373, 0.1081],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0934, 0.1309, 0.1181,  ..., 0.1067, 0.1214, 0.1162],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0892, 0.1332, 0.1136,  ..., 0.1038, 0.1373, 0.1081],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0934, 0.1309, 0.1181,  ..., 0.1067, 0.1214, 0.1162],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[28.4311],
+        [26.3978]], device='cuda:0')
+importance_weights: tensor([[0.8843, 0.1157]], device='cuda:0')
+x0_index: tensor([0], device='cuda:0')
+x_next: tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 4, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 6, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5],
+        [7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 6, 4, 4, 4, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+t.repeat(k,1): tensor([[0.5078],
+        [0.5078]], device='cuda:0')
+x0_samples: tensor([[7, 7, 3, 6, 7, 1, 6, 6, 5, 8, 8, 8, 8, 2, 5, 1, 0, 2, 7, 5, 3, 8, 3, 9,
+         5, 2, 9, 3, 0, 9, 8, 8, 9, 9, 3, 0, 3, 7, 3, 5, 0, 1, 5, 6, 1, 8, 8, 2,
+         0, 7, 1, 1, 9, 3, 0, 5, 2, 9, 1, 2, 6, 6, 0, 1, 0, 1, 2, 7, 5, 6, 1, 0,
+         6, 8, 9, 9, 8, 1, 8, 8, 2, 3, 8, 3, 7, 2, 2, 3, 2, 8, 3, 6, 0, 8, 5, 1,
+         9, 2, 3, 0, 6, 6, 2, 3, 6, 9, 2, 1, 0, 0, 9, 1, 5, 5, 8, 9, 5, 1, 8, 6,
+         9, 6, 2, 9, 6, 0, 8, 5],
+        [7, 8, 3, 6, 7, 1, 7, 8, 5, 5, 9, 2, 7, 2, 5, 1, 0, 2, 2, 5, 3, 7, 3, 2,
+         5, 9, 9, 7, 3, 9, 8, 9, 9, 9, 3, 0, 3, 7, 2, 5, 0, 6, 8, 6, 5, 2, 2, 2,
+         0, 7, 1, 1, 2, 3, 7, 9, 2, 6, 1, 2, 9, 5, 1, 8, 9, 1, 2, 0, 5, 3, 8, 0,
+         6, 8, 8, 9, 8, 6, 5, 8, 0, 3, 3, 3, 7, 2, 2, 3, 2, 1, 3, 2, 5, 6, 2, 3,
+         6, 2, 3, 5, 6, 0, 7, 3, 9, 9, 2, 1, 0, 0, 9, 8, 8, 3, 6, 9, 1, 9, 5, 6,
+         9, 6, 2, 6, 6, 0, 6, 5]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0903, 0.1217, 0.1172,  ..., 0.1148, 0.1382, 0.1101],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0931, 0.1226, 0.1154,  ..., 0.1084, 0.1180, 0.1180],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0903, 0.1217, 0.1172,  ..., 0.1148, 0.1382, 0.1101],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0931, 0.1226, 0.1154,  ..., 0.1084, 0.1180, 0.1180],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[26.9778],
+        [29.0210]], device='cuda:0')
+importance_weights: tensor([[0.1147, 0.8853]], device='cuda:0')
+x0_index: tensor([1], device='cuda:0')
+x_next: tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5],
+        [7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+t.repeat(k,1): tensor([[0.5000],
+        [0.5000]], device='cuda:0')
+x0_samples: tensor([[7, 0, 3, 6, 7, 1, 9, 6, 5, 9, 0, 7, 5, 2, 5, 1, 0, 2, 3, 5, 3, 0, 3, 8,
+         5, 1, 9, 8, 0, 9, 8, 1, 8, 5, 3, 0, 3, 7, 9, 5, 0, 2, 0, 6, 7, 7, 2, 2,
+         0, 7, 1, 1, 9, 3, 3, 0, 2, 9, 1, 2, 2, 0, 5, 3, 5, 1, 2, 5, 5, 5, 1, 0,
+         6, 8, 9, 9, 8, 9, 6, 8, 3, 3, 6, 3, 7, 2, 2, 3, 2, 9, 6, 5, 5, 1, 2, 5,
+         9, 2, 3, 9, 6, 9, 1, 3, 3, 9, 2, 1, 0, 0, 9, 8, 1, 2, 1, 9, 2, 3, 9, 6,
+         9, 6, 2, 7, 6, 0, 8, 5],
+        [7, 2, 3, 6, 7, 1, 8, 3, 5, 6, 0, 1, 0, 2, 5, 1, 0, 2, 7, 5, 3, 5, 3, 3,
+         5, 0, 9, 5, 3, 9, 8, 3, 2, 5, 3, 0, 3, 7, 0, 5, 3, 6, 9, 6, 9, 5, 2, 2,
+         0, 7, 1, 1, 8, 3, 9, 0, 2, 3, 1, 2, 9, 7, 3, 5, 6, 1, 2, 9, 5, 3, 8, 0,
+         6, 8, 5, 9, 8, 2, 2, 8, 8, 3, 1, 3, 7, 2, 2, 3, 2, 6, 2, 1, 2, 3, 5, 2,
+         6, 2, 3, 6, 8, 7, 3, 3, 7, 9, 2, 1, 0, 0, 9, 5, 1, 2, 3, 9, 3, 6, 6, 6,
+         9, 6, 2, 0, 6, 0, 1, 5]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0902, 0.1253, 0.1173,  ..., 0.1083, 0.1436, 0.1065],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0927, 0.1178, 0.1171,  ..., 0.1171, 0.1224, 0.1173],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0902, 0.1253, 0.1173,  ..., 0.1083, 0.1436, 0.1065],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0927, 0.1178, 0.1171,  ..., 0.1171, 0.1224, 0.1173],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[27.8916],
+        [31.1131]], device='cuda:0')
+importance_weights: tensor([[0.0384, 0.9616]], device='cuda:0')
+x0_index: tensor([1], device='cuda:0')
+x_next: tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 4, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 2, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5],
+        [7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 2, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+t.repeat(k,1): tensor([[0.4609],
+        [0.4609]], device='cuda:0')
+x0_samples: tensor([[7, 3, 3, 6, 7, 1, 3, 9, 5, 6, 1, 1, 3, 2, 5, 1, 0, 2, 8, 5, 3, 1, 3, 5,
+         5, 8, 9, 1, 3, 9, 8, 0, 5, 3, 3, 0, 3, 7, 8, 5, 1, 7, 9, 6, 0, 6, 2, 2,
+         0, 7, 1, 1, 5, 3, 2, 2, 2, 1, 1, 2, 0, 7, 9, 2, 3, 1, 9, 5, 5, 3, 3, 0,
+         6, 8, 9, 9, 8, 2, 5, 8, 2, 3, 5, 3, 7, 2, 2, 3, 2, 1, 7, 1, 9, 7, 5, 9,
+         3, 2, 3, 9, 9, 6, 8, 3, 9, 9, 2, 1, 0, 0, 9, 7, 8, 5, 3, 9, 3, 8, 9, 6,
+         9, 6, 2, 3, 6, 0, 2, 5],
+        [7, 8, 3, 6, 7, 1, 2, 9, 5, 0, 2, 5, 1, 2, 5, 1, 0, 2, 5, 5, 3, 9, 3, 9,
+         5, 1, 9, 7, 1, 9, 8, 1, 1, 9, 3, 0, 3, 7, 8, 5, 2, 0, 3, 6, 9, 0, 2, 2,
+         0, 7, 1, 1, 8, 3, 9, 7, 2, 3, 1, 2, 9, 6, 0, 0, 9, 1, 8, 6, 5, 1, 3, 0,
+         6, 8, 2, 9, 8, 2, 7, 8, 5, 3, 8, 3, 7, 2, 2, 3, 2, 5, 9, 9, 6, 6, 6, 6,
+         9, 2, 3, 8, 1, 9, 3, 3, 3, 9, 2, 1, 0, 0, 9, 6, 8, 3, 8, 9, 1, 1, 5, 6,
+         9, 6, 2, 0, 6, 0, 3, 5]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0893, 0.1276, 0.1136,  ..., 0.1093, 0.1459, 0.1067],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0957, 0.1176, 0.1165,  ..., 0.1124, 0.1209, 0.1169],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0893, 0.1276, 0.1136,  ..., 0.1093, 0.1459, 0.1067],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0957, 0.1176, 0.1165,  ..., 0.1124, 0.1209, 0.1169],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[32.3870],
+        [30.9772]], device='cuda:0')
+importance_weights: tensor([[0.8037, 0.1963]], device='cuda:0')
+x0_index: tensor([0], device='cuda:0')
+x_next: tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 4, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 2, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 7, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 2, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5],
+        [7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 7, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 2, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+t.repeat(k,1): tensor([[0.4453],
+        [0.4453]], device='cuda:0')
+x0_samples: tensor([[7, 0, 3, 6, 7, 1, 7, 8, 5, 0, 1, 6, 1, 2, 5, 1, 0, 2, 0, 5, 3, 5, 3, 2,
+         5, 7, 9, 1, 0, 9, 8, 9, 7, 3, 3, 0, 3, 7, 3, 5, 6, 9, 7, 6, 5, 3, 2, 2,
+         0, 7, 1, 1, 9, 3, 0, 5, 2, 7, 1, 2, 8, 7, 8, 5, 6, 1, 0, 7, 5, 5, 0, 0,
+         6, 8, 9, 9, 8, 2, 9, 8, 1, 3, 8, 3, 7, 2, 2, 3, 2, 2, 6, 2, 6, 1, 8, 8,
+         9, 2, 3, 1, 7, 0, 0, 3, 0, 9, 2, 1, 0, 0, 9, 6, 1, 5, 6, 9, 9, 0, 8, 6,
+         9, 6, 2, 2, 6, 0, 9, 5],
+        [7, 8, 3, 6, 7, 1, 8, 6, 5, 5, 5, 5, 6, 2, 5, 1, 0, 2, 3, 5, 3, 9, 3, 1,
+         5, 3, 9, 7, 7, 9, 8, 9, 5, 7, 3, 0, 3, 7, 1, 5, 0, 1, 0, 6, 5, 1, 2, 2,
+         0, 7, 1, 1, 1, 3, 3, 1, 2, 5, 1, 2, 1, 7, 5, 2, 7, 1, 1, 9, 5, 6, 1, 0,
+         6, 8, 1, 9, 8, 2, 0, 8, 3, 3, 9, 3, 7, 2, 2, 3, 2, 8, 7, 7, 3, 5, 7, 9,
+         8, 2, 3, 0, 9, 8, 9, 3, 8, 9, 2, 1, 0, 0, 9, 2, 5, 0, 0, 9, 0, 1, 8, 6,
+         9, 6, 2, 2, 6, 0, 2, 5]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0959, 0.1352, 0.1080,  ..., 0.1028, 0.1358, 0.1019],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0917, 0.1170, 0.1209,  ..., 0.1075, 0.1300, 0.1193],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0959, 0.1352, 0.1080,  ..., 0.1028, 0.1358, 0.1019],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0917, 0.1170, 0.1209,  ..., 0.1075, 0.1300, 0.1193],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[25.2058],
+        [28.4103]], device='cuda:0')
+importance_weights: tensor([[0.0390, 0.9610]], device='cuda:0')
+x0_index: tensor([1], device='cuda:0')
+x_next: tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 4, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 7, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 2, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 5, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 7, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 2, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5],
+        [7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 5, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 4, 5, 4, 4, 4, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 7, 4, 4, 4, 1, 4, 4, 5, 4, 4, 0,
+         6, 8, 4, 9, 8, 2, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 4,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 4, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+t.repeat(k,1): tensor([[0.4297],
+        [0.4297]], device='cuda:0')
+x0_samples: tensor([[7, 7, 3, 6, 7, 1, 2, 5, 5, 1, 5, 9, 1, 2, 5, 1, 0, 2, 3, 5, 3, 3, 3, 5,
+         5, 6, 9, 7, 5, 9, 8, 9, 6, 7, 3, 0, 3, 7, 6, 5, 6, 9, 9, 6, 6, 2, 2, 2,
+         0, 7, 1, 1, 7, 3, 1, 1, 2, 3, 1, 2, 7, 7, 5, 5, 1, 1, 2, 2, 5, 3, 8, 0,
+         6, 8, 6, 9, 8, 2, 6, 8, 7, 3, 5, 3, 7, 2, 2, 3, 2, 1, 0, 2, 3, 7, 1, 3,
+         6, 2, 3, 7, 6, 0, 7, 3, 7, 9, 2, 1, 0, 0, 9, 1, 2, 9, 3, 9, 7, 1, 8, 6,
+         9, 6, 2, 8, 6, 0, 1, 5],
+        [7, 9, 3, 6, 7, 1, 2, 7, 5, 7, 5, 9, 2, 2, 5, 1, 0, 2, 8, 5, 3, 2, 3, 8,
+         5, 1, 9, 0, 1, 9, 8, 6, 1, 6, 3, 0, 3, 7, 7, 5, 5, 1, 3, 6, 5, 6, 2, 2,
+         0, 7, 1, 1, 8, 3, 8, 1, 2, 2, 1, 2, 9, 7, 2, 0, 2, 1, 3, 7, 5, 3, 7, 0,
+         6, 8, 1, 9, 8, 2, 2, 8, 1, 3, 1, 3, 7, 2, 2, 3, 2, 9, 8, 1, 6, 0, 1, 7,
+         9, 2, 3, 9, 2, 5, 3, 3, 7, 9, 2, 1, 0, 0, 9, 9, 0, 2, 7, 9, 6, 0, 7, 6,
+         9, 6, 2, 6, 6, 0, 3, 5]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0927, 0.1156, 0.1120,  ..., 0.1098, 0.1475, 0.1064],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0922, 0.1167, 0.1187,  ..., 0.1091, 0.1294, 0.1129],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0927, 0.1156, 0.1120,  ..., 0.1098, 0.1475, 0.1064],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0922, 0.1167, 0.1187,  ..., 0.1091, 0.1294, 0.1129],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[32.3084],
+        [28.1330]], device='cuda:0')
+importance_weights: tensor([[0.9849, 0.0151]], device='cuda:0')
+x0_index: tensor([0], device='cuda:0')
+x_next: tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 5, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 6, 5, 4, 4, 9, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 7, 5, 4, 4, 1, 4, 4, 5, 4, 8, 0,
+         6, 8, 6, 9, 8, 2, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 3,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 9, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 5, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 6, 5, 4, 4, 9, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 7, 5, 4, 4, 1, 4, 4, 5, 4, 8, 0,
+         6, 8, 6, 9, 8, 2, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 3,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 9, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5],
+        [7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 5, 4, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 6, 5, 4, 4, 9, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 7, 5, 4, 4, 1, 4, 4, 5, 4, 8, 0,
+         6, 8, 6, 9, 8, 2, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 3,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 9, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+t.repeat(k,1): tensor([[0.4219],
+        [0.4219]], device='cuda:0')
+x0_samples: tensor([[7, 8, 3, 6, 7, 1, 3, 3, 5, 6, 5, 9, 0, 2, 5, 1, 0, 2, 7, 5, 3, 1, 3, 1,
+         5, 6, 9, 7, 9, 9, 8, 5, 8, 2, 3, 0, 3, 7, 6, 5, 7, 3, 9, 6, 8, 6, 2, 2,
+         0, 7, 1, 1, 0, 3, 3, 1, 2, 9, 1, 2, 0, 7, 5, 7, 0, 1, 5, 0, 5, 7, 8, 0,
+         6, 8, 6, 9, 8, 2, 9, 8, 1, 3, 3, 3, 7, 2, 2, 3, 2, 8, 6, 0, 6, 8, 2, 3,
+         3, 2, 3, 2, 2, 5, 5, 3, 3, 9, 2, 1, 0, 0, 9, 6, 6, 9, 6, 9, 6, 0, 2, 6,
+         9, 6, 2, 2, 6, 0, 1, 5],
+        [7, 8, 3, 6, 7, 1, 0, 3, 5, 1, 5, 8, 6, 2, 5, 1, 0, 2, 7, 5, 3, 3, 3, 8,
+         5, 1, 9, 9, 1, 9, 8, 2, 5, 6, 3, 0, 3, 7, 6, 5, 1, 8, 9, 6, 9, 8, 2, 2,
+         0, 7, 1, 1, 2, 3, 6, 6, 2, 8, 1, 2, 0, 7, 5, 3, 7, 1, 8, 2, 5, 9, 8, 0,
+         6, 8, 6, 9, 8, 2, 5, 8, 3, 3, 8, 3, 7, 2, 2, 3, 2, 8, 5, 9, 8, 7, 9, 3,
+         8, 2, 3, 7, 3, 2, 1, 3, 9, 9, 2, 1, 0, 0, 9, 1, 0, 9, 6, 9, 1, 9, 9, 6,
+         9, 6, 2, 8, 6, 0, 8, 5]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0930, 0.1339, 0.1110,  ..., 0.1091, 0.1365, 0.1110],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0932, 0.1249, 0.1189,  ..., 0.1099, 0.1228, 0.1137],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0930, 0.1339, 0.1110,  ..., 0.1091, 0.1365, 0.1110],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0932, 0.1249, 0.1189,  ..., 0.1099, 0.1228, 0.1137],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[25.3366],
+        [24.1107]], device='cuda:0')
+importance_weights: tensor([[0.7731, 0.2269]], device='cuda:0')
+x0_index: tensor([0], device='cuda:0')
+x_next: tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 5, 9, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 6, 5, 4, 4, 9, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 7, 5, 4, 4, 1, 4, 4, 5, 4, 8, 0,
+         6, 8, 6, 9, 8, 2, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 3,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 9, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 5, 9, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 6, 5, 4, 4, 9, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 7, 5, 4, 4, 1, 4, 4, 5, 4, 8, 0,
+         6, 8, 6, 9, 8, 2, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 3,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 9, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5],
+        [7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 5, 9, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 6, 5, 4, 4, 9, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 7, 5, 4, 4, 1, 4, 4, 5, 4, 8, 0,
+         6, 8, 6, 9, 8, 2, 4, 8, 4, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 3,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 9, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+t.repeat(k,1): tensor([[0.4141],
+        [0.4141]], device='cuda:0')
+x0_samples: tensor([[7, 8, 3, 6, 7, 1, 6, 8, 5, 9, 5, 9, 3, 2, 5, 1, 0, 2, 8, 5, 3, 7, 3, 8,
+         5, 2, 9, 0, 5, 9, 8, 6, 8, 3, 3, 0, 3, 7, 6, 5, 2, 3, 9, 6, 0, 1, 2, 2,
+         0, 7, 1, 1, 9, 3, 0, 8, 2, 0, 1, 2, 2, 7, 5, 9, 3, 1, 8, 8, 5, 9, 8, 0,
+         6, 8, 6, 9, 8, 2, 9, 8, 8, 3, 3, 3, 7, 2, 2, 3, 2, 7, 1, 2, 3, 3, 6, 3,
+         7, 2, 3, 7, 5, 6, 0, 3, 2, 9, 2, 1, 0, 0, 9, 2, 9, 9, 0, 9, 8, 3, 8, 6,
+         9, 6, 2, 8, 6, 0, 9, 5],
+        [7, 2, 3, 6, 7, 1, 7, 8, 5, 6, 5, 9, 7, 2, 5, 1, 0, 2, 7, 5, 3, 6, 3, 2,
+         5, 6, 9, 1, 7, 9, 8, 3, 2, 7, 3, 0, 3, 7, 6, 5, 7, 8, 9, 6, 2, 7, 2, 2,
+         0, 7, 1, 1, 1, 3, 5, 0, 2, 5, 1, 2, 1, 7, 5, 6, 3, 1, 5, 1, 5, 5, 8, 0,
+         6, 8, 6, 9, 8, 2, 2, 8, 5, 3, 5, 3, 7, 2, 2, 3, 2, 0, 9, 8, 3, 2, 7, 3,
+         9, 2, 3, 9, 0, 3, 0, 3, 7, 9, 2, 1, 0, 0, 9, 3, 3, 9, 1, 9, 6, 5, 9, 6,
+         9, 6, 2, 3, 6, 0, 1, 5]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0881, 0.1212, 0.1187,  ..., 0.1092, 0.1371, 0.1119],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0977, 0.1145, 0.1177,  ..., 0.1009, 0.1227, 0.1149],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0881, 0.1212, 0.1187,  ..., 0.1092, 0.1371, 0.1119],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0977, 0.1145, 0.1177,  ..., 0.1009, 0.1227, 0.1149],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[21.0990],
+        [24.9755]], device='cuda:0')
+importance_weights: tensor([[0.0203, 0.9797]], device='cuda:0')
+x0_index: tensor([1], device='cuda:0')
+x_next: tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 5, 9, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 6, 5, 4, 4, 9, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 7, 5, 4, 4, 1, 4, 4, 5, 4, 8, 0,
+         6, 8, 6, 9, 8, 2, 4, 8, 5, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 3,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 9, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 5, 9, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 6, 5, 4, 4, 9, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 7, 5, 4, 4, 1, 4, 4, 5, 4, 8, 0,
+         6, 8, 6, 9, 8, 2, 4, 8, 5, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 3,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 9, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5],
+        [7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 5, 9, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 6, 5, 4, 4, 9, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 7, 5, 4, 4, 1, 4, 4, 5, 4, 8, 0,
+         6, 8, 6, 9, 8, 2, 4, 8, 5, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 3,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 9, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+t.repeat(k,1): tensor([[0.4063],
+        [0.4063]], device='cuda:0')
+x0_samples: tensor([[7, 3, 3, 6, 7, 1, 3, 5, 5, 8, 5, 9, 7, 2, 5, 1, 0, 2, 9, 5, 3, 0, 3, 5,
+         5, 3, 9, 1, 9, 9, 8, 1, 3, 8, 3, 0, 3, 7, 6, 5, 3, 3, 9, 6, 0, 3, 2, 2,
+         0, 7, 1, 1, 2, 3, 7, 9, 2, 1, 1, 2, 7, 7, 5, 5, 3, 1, 2, 2, 5, 5, 8, 0,
+         6, 8, 6, 9, 8, 2, 1, 8, 5, 3, 2, 3, 7, 2, 2, 3, 2, 1, 5, 5, 0, 9, 7, 3,
+         5, 2, 3, 5, 8, 5, 0, 3, 3, 9, 2, 1, 0, 0, 9, 5, 8, 9, 2, 9, 8, 2, 1, 6,
+         9, 6, 2, 8, 6, 0, 1, 5],
+        [7, 2, 3, 6, 7, 1, 2, 8, 5, 6, 5, 9, 2, 2, 5, 1, 0, 2, 7, 5, 3, 0, 3, 7,
+         5, 5, 9, 3, 5, 9, 8, 5, 7, 1, 3, 0, 3, 7, 6, 5, 9, 1, 9, 6, 9, 2, 2, 2,
+         0, 7, 1, 1, 3, 3, 1, 1, 2, 9, 1, 2, 3, 7, 5, 6, 8, 1, 3, 6, 5, 6, 8, 0,
+         6, 8, 6, 9, 8, 2, 0, 8, 5, 3, 5, 3, 7, 2, 2, 3, 2, 2, 7, 2, 0, 7, 7, 3,
+         8, 2, 3, 9, 2, 9, 2, 3, 2, 9, 2, 1, 0, 0, 9, 5, 6, 9, 7, 9, 7, 1, 8, 6,
+         9, 6, 2, 3, 6, 0, 1, 5]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0895, 0.1235, 0.1105,  ..., 0.1124, 0.1388, 0.1120],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0967, 0.1172, 0.1171,  ..., 0.1042, 0.1221, 0.1156],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000],
+         [0.0895, 0.1235, 0.1105,  ..., 0.1124, 0.1388, 0.1120],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         ...,
+         [1.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0967, 0.1172, 0.1171,  ..., 0.1042, 0.1221, 0.1156],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[25.3902],
+        [23.2624]], device='cuda:0')
+importance_weights: tensor([[0.8936, 0.1064]], device='cuda:0')
+x0_index: tensor([0], device='cuda:0')
+x_next: tensor([[7, 4, 3, 6, 7, 1, 4, 4, 5, 4, 5, 9, 4, 2, 5, 1, 0, 2, 4, 5, 3, 4, 3, 4,
+         5, 4, 9, 4, 4, 9, 8, 4, 4, 4, 3, 0, 3, 7, 6, 5, 4, 4, 9, 6, 4, 4, 2, 2,
+         0, 7, 1, 1, 4, 3, 4, 4, 2, 4, 1, 2, 4, 7, 5, 4, 4, 1, 4, 4, 5, 4, 8, 0,
+         6, 8, 6, 9, 8, 2, 4, 8, 5, 3, 4, 3, 7, 2, 2, 3, 2, 4, 4, 4, 4, 4, 4, 3,
+         4, 2, 3, 4, 4, 4, 4, 3, 4, 9, 2, 1, 0, 0, 9, 4, 4, 9, 4, 9, 4, 4, 4, 6,
+         9, 6, 2, 4, 6, 0, 4, 5]], device='cuda:0')
+steps: 128
+samples: tensor([[7, 2, 3, 6, 7, 1, 5, 0, 5, 8, 5, 9, 6, 2, 5, 1, 0, 2, 0, 5, 3, 2, 3, 9,
+         5, 6, 9, 7, 0, 9, 8, 0, 7, 1, 3, 0, 3, 7, 6, 5, 6, 5, 9, 6, 7, 0, 2, 2,
+         0, 7, 1, 1, 9, 3, 8, 2, 2, 5, 1, 2, 2, 7, 5, 2, 0, 1, 7, 7, 5, 1, 8, 0,
+         6, 8, 6, 9, 8, 2, 3, 8, 5, 3, 1, 3, 7, 2, 2, 3, 2, 0, 2, 5, 6, 2, 6, 3,
+         8, 2, 3, 3, 1, 6, 6, 3, 7, 9, 2, 1, 0, 0, 9, 0, 7, 9, 8, 9, 2, 6, 9, 6,
+         9, 6, 2, 7, 6, 0, 2, 5]], device='cuda:0')
+text_samples: ['C<eos><unk>AC<cls><null><pad><null>G<null>UA<eos><null><cls><pad><eos><pad><null><unk><eos><unk>U<null>AUC<pad>UG<pad>C<cls><unk><pad><unk>CA<null>A<null>UAC<pad><eos><eos><pad>C<cls><cls>U<unk>G<eos><eos><null><cls><eos><eos>C<null><eos><pad><cls>CC<null><cls>G<pad>AGAUG<eos><unk>G<null><unk><cls><unk>C<eos><eos><unk><eos><pad><eos><null>A<eos>A<unk>G<eos><unk><unk><cls>AA<unk>CU<eos><cls><pad><pad>U<pad>CUGU<eos>AUAUA<eos>CA<pad><eos><null>']
+k: 2
+x.repeat(k,1): tensor([[1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 4, 4, 4, 4, 1, 7, 4, 8, 5, 4, 4, 5, 1, 4, 2, 0, 4, 7, 4, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 4, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 4, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 4, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 4, 4, 6,
+         4, 4, 2, 2, 4, 2, 4, 7],
+        [1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 4, 4, 4, 4, 1, 7, 4, 8, 5, 4, 4, 5, 1, 4, 2, 0, 4, 7, 4, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 4, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 4, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 4, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 4, 4, 6,
+         4, 4, 2, 2, 4, 2, 4, 7]], device='cuda:0')
+t.repeat(k,1): tensor([[0.5859],
+        [0.5859]], device='cuda:0')
+x0_samples: tensor([[1, 7, 8, 2, 2, 5, 0, 3, 6, 7, 3, 2, 8, 3, 5, 1, 2, 2, 9, 8, 6, 7, 9, 9,
+         6, 9, 9, 7, 3, 5, 1, 1, 7, 2, 8, 5, 7, 0, 5, 1, 8, 2, 0, 5, 7, 9, 2, 2,
+         0, 6, 5, 2, 5, 6, 7, 2, 7, 3, 8, 8, 6, 1, 8, 2, 1, 8, 8, 2, 9, 7, 2, 7,
+         8, 6, 2, 9, 1, 7, 7, 6, 1, 3, 6, 6, 7, 6, 7, 7, 7, 6, 6, 1, 5, 8, 9, 5,
+         8, 0, 8, 9, 3, 9, 3, 7, 9, 9, 3, 8, 7, 6, 7, 8, 1, 5, 3, 1, 9, 2, 1, 6,
+         1, 7, 2, 2, 1, 2, 5, 7],
+        [1, 7, 8, 8, 2, 8, 0, 8, 9, 6, 3, 2, 3, 3, 5, 1, 5, 2, 7, 7, 8, 3, 9, 6,
+         6, 0, 9, 1, 5, 3, 0, 1, 7, 0, 8, 5, 9, 3, 5, 1, 3, 2, 0, 2, 7, 1, 2, 2,
+         6, 6, 5, 5, 5, 6, 8, 2, 5, 7, 9, 5, 6, 1, 8, 6, 1, 2, 7, 7, 2, 8, 8, 0,
+         3, 6, 2, 9, 3, 2, 1, 3, 1, 3, 6, 7, 7, 6, 8, 7, 7, 2, 6, 1, 8, 8, 3, 5,
+         8, 0, 0, 9, 3, 3, 3, 9, 1, 5, 3, 1, 7, 1, 3, 8, 2, 5, 1, 1, 9, 6, 8, 6,
+         3, 8, 2, 2, 5, 2, 2, 7]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0906, 0.1091, 0.1144,  ..., 0.1090, 0.1369, 0.1134],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0929, 0.1248, 0.1192,  ..., 0.1071, 0.1256, 0.1137],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0906, 0.1091, 0.1144,  ..., 0.1090, 0.1369, 0.1134],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0929, 0.1248, 0.1192,  ..., 0.1071, 0.1256, 0.1137],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[32.9165],
+        [33.5415]], device='cuda:0')
+importance_weights: tensor([[0.3486, 0.6514]], device='cuda:0')
+x0_index: tensor([1], device='cuda:0')
+x_next: tensor([[1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 4, 4, 4, 4, 1, 7, 4, 8, 5, 4, 4, 5, 1, 4, 2, 0, 4, 7, 4, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 4, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 4, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 4, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 4, 4, 4, 4, 1, 7, 4, 8, 5, 4, 4, 5, 1, 4, 2, 0, 4, 7, 4, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 4, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 4, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 4, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7],
+        [1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 4, 4, 4, 4, 1, 7, 4, 8, 5, 4, 4, 5, 1, 4, 2, 0, 4, 7, 4, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 4, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 4, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 4, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7]], device='cuda:0')
+t.repeat(k,1): tensor([[0.5781],
+        [0.5781]], device='cuda:0')
+x0_samples: tensor([[1, 7, 8, 5, 2, 5, 2, 2, 7, 1, 3, 2, 8, 3, 5, 1, 6, 2, 1, 7, 6, 9, 9, 6,
+         6, 6, 9, 5, 9, 0, 6, 1, 7, 2, 8, 5, 8, 3, 5, 1, 6, 2, 0, 8, 7, 2, 2, 2,
+         1, 6, 5, 3, 5, 6, 1, 0, 1, 9, 2, 3, 6, 1, 8, 8, 1, 7, 7, 0, 5, 9, 8, 9,
+         7, 6, 2, 9, 3, 8, 6, 7, 1, 3, 6, 9, 7, 6, 5, 7, 7, 8, 2, 9, 8, 3, 0, 5,
+         8, 0, 5, 9, 3, 8, 3, 0, 5, 7, 3, 8, 7, 8, 8, 8, 2, 5, 2, 1, 9, 2, 8, 6,
+         3, 2, 2, 2, 5, 2, 1, 7],
+        [1, 9, 8, 2, 2, 9, 8, 2, 1, 0, 3, 2, 3, 3, 5, 1, 0, 2, 7, 8, 3, 7, 9, 9,
+         6, 0, 9, 8, 8, 8, 1, 1, 7, 2, 8, 5, 7, 8, 5, 1, 2, 2, 0, 9, 7, 5, 2, 2,
+         6, 6, 5, 9, 5, 6, 0, 9, 5, 1, 1, 3, 6, 1, 8, 3, 1, 7, 5, 3, 9, 2, 6, 9,
+         8, 6, 2, 9, 3, 7, 1, 5, 1, 3, 6, 5, 7, 6, 9, 7, 7, 8, 9, 3, 2, 5, 8, 5,
+         8, 0, 6, 9, 3, 5, 3, 8, 5, 9, 3, 8, 7, 9, 6, 8, 9, 5, 7, 1, 9, 6, 8, 6,
+         1, 0, 2, 2, 5, 2, 2, 7]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0912, 0.1122, 0.1167,  ..., 0.1071, 0.1338, 0.1102],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0903, 0.1259, 0.1204,  ..., 0.1056, 0.1264, 0.1123],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0912, 0.1122, 0.1167,  ..., 0.1071, 0.1338, 0.1102],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0903, 0.1259, 0.1204,  ..., 0.1056, 0.1264, 0.1123],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[27.5546],
+        [31.2309]], device='cuda:0')
+importance_weights: tensor([[0.0247, 0.9753]], device='cuda:0')
+x0_index: tensor([1], device='cuda:0')
+x_next: tensor([[1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 4, 4, 4, 4, 1, 7, 4, 8, 5, 4, 4, 5, 1, 4, 2, 0, 4, 7, 4, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 4, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 4, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 4, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 4, 4, 4, 4, 1, 7, 4, 8, 5, 4, 4, 5, 1, 4, 2, 0, 4, 7, 4, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 4, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 4, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7],
+        [1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 4, 4, 4, 4, 1, 7, 4, 8, 5, 4, 4, 5, 1, 4, 2, 0, 4, 7, 4, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 4, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 4, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7]], device='cuda:0')
+t.repeat(k,1): tensor([[0.5625],
+        [0.5625]], device='cuda:0')
+x0_samples: tensor([[1, 1, 8, 7, 2, 1, 5, 2, 6, 5, 3, 2, 9, 3, 5, 1, 2, 2, 3, 5, 1, 6, 9, 8,
+         6, 6, 9, 6, 1, 7, 3, 1, 7, 1, 8, 5, 5, 2, 5, 1, 3, 2, 0, 0, 7, 8, 2, 2,
+         9, 6, 5, 7, 5, 6, 1, 8, 6, 2, 2, 5, 6, 1, 8, 9, 1, 5, 5, 3, 0, 7, 6, 6,
+         5, 6, 2, 9, 3, 8, 5, 6, 1, 3, 6, 1, 7, 6, 9, 7, 7, 0, 6, 1, 2, 0, 8, 5,
+         5, 0, 6, 9, 3, 8, 3, 6, 9, 7, 3, 0, 7, 5, 3, 8, 0, 5, 9, 1, 9, 5, 0, 6,
+         7, 9, 2, 2, 5, 2, 2, 7],
+        [1, 7, 8, 7, 2, 8, 7, 5, 7, 9, 3, 2, 6, 3, 5, 1, 2, 2, 8, 5, 5, 0, 9, 8,
+         6, 7, 9, 3, 5, 6, 2, 1, 7, 7, 8, 5, 9, 3, 5, 1, 2, 2, 0, 9, 7, 7, 2, 2,
+         8, 6, 5, 1, 5, 6, 2, 6, 2, 1, 8, 8, 6, 1, 8, 7, 1, 7, 6, 7, 9, 2, 3, 0,
+         1, 6, 2, 9, 3, 0, 2, 8, 1, 3, 6, 8, 7, 6, 9, 7, 7, 7, 1, 6, 7, 5, 8, 5,
+         2, 0, 8, 9, 3, 2, 3, 6, 8, 3, 3, 6, 7, 7, 2, 8, 3, 5, 5, 1, 9, 9, 0, 6,
+         5, 7, 2, 2, 5, 2, 7, 7]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0870, 0.1214, 0.1216,  ..., 0.1017, 0.1335, 0.1126],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0932, 0.1189, 0.1182,  ..., 0.1097, 0.1327, 0.1115],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0870, 0.1214, 0.1216,  ..., 0.1017, 0.1335, 0.1126],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0932, 0.1189, 0.1182,  ..., 0.1097, 0.1327, 0.1115],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[30.1628],
+        [31.4459]], device='cuda:0')
+importance_weights: tensor([[0.2170, 0.7830]], device='cuda:0')
+x0_index: tensor([1], device='cuda:0')
+x_next: tensor([[1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 4, 4, 4, 4, 1, 7, 4, 8, 5, 4, 4, 5, 1, 4, 2, 0, 4, 7, 4, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 4, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 4, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 4, 4, 4, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 4, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 4, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 4, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7],
+        [1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 4, 4, 4, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 4, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 4, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 4, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7]], device='cuda:0')
+t.repeat(k,1): tensor([[0.5391],
+        [0.5391]], device='cuda:0')
+x0_samples: tensor([[1, 3, 8, 0, 2, 6, 1, 3, 7, 7, 3, 2, 8, 3, 5, 1, 6, 2, 3, 1, 1, 0, 9, 7,
+         6, 1, 9, 8, 1, 1, 1, 1, 7, 7, 8, 5, 6, 3, 5, 1, 3, 2, 0, 3, 7, 5, 2, 2,
+         3, 6, 5, 3, 5, 6, 7, 9, 1, 7, 2, 2, 6, 1, 8, 5, 1, 6, 2, 7, 5, 8, 9, 8,
+         1, 6, 2, 9, 3, 0, 1, 1, 1, 3, 6, 6, 7, 6, 7, 7, 7, 1, 2, 6, 5, 1, 8, 5,
+         7, 0, 9, 9, 3, 1, 3, 5, 6, 8, 3, 5, 7, 1, 3, 8, 1, 5, 8, 1, 9, 5, 6, 6,
+         9, 7, 2, 2, 5, 2, 5, 7],
+        [1, 7, 8, 1, 2, 9, 8, 7, 9, 6, 3, 2, 1, 3, 5, 1, 7, 2, 0, 2, 3, 5, 9, 9,
+         6, 3, 9, 6, 5, 5, 7, 1, 7, 3, 8, 5, 0, 3, 5, 1, 1, 2, 0, 7, 7, 8, 2, 2,
+         1, 6, 5, 2, 5, 6, 7, 1, 0, 7, 1, 6, 6, 1, 8, 5, 1, 2, 6, 2, 5, 1, 6, 2,
+         7, 6, 2, 9, 3, 6, 3, 2, 1, 3, 6, 7, 7, 6, 7, 7, 7, 2, 0, 6, 6, 7, 8, 5,
+         3, 0, 7, 9, 3, 6, 3, 7, 0, 7, 3, 0, 7, 8, 7, 8, 5, 5, 7, 1, 9, 1, 0, 6,
+         6, 5, 2, 2, 5, 2, 6, 7]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0894, 0.1168, 0.1182,  ..., 0.1064, 0.1317, 0.1129],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0903, 0.1153, 0.1175,  ..., 0.1097, 0.1295, 0.1133],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0894, 0.1168, 0.1182,  ..., 0.1064, 0.1317, 0.1129],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0903, 0.1153, 0.1175,  ..., 0.1097, 0.1295, 0.1133],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[38.1504],
+        [33.8611]], device='cuda:0')
+importance_weights: tensor([[0.9865, 0.0135]], device='cuda:0')
+x0_index: tensor([0], device='cuda:0')
+x_next: tensor([[1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 4, 4, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 4, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 4, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 4, 4, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 4, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 4, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7],
+        [1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 4, 4, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 4, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 4, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7]], device='cuda:0')
+t.repeat(k,1): tensor([[0.5313],
+        [0.5313]], device='cuda:0')
+x0_samples: tensor([[1, 7, 8, 8, 2, 7, 1, 5, 0, 3, 3, 2, 5, 3, 5, 1, 1, 2, 8, 9, 0, 8, 9, 5,
+         6, 5, 9, 8, 7, 0, 0, 1, 7, 2, 8, 5, 8, 3, 5, 1, 9, 2, 0, 2, 7, 5, 2, 2,
+         1, 6, 5, 3, 5, 6, 3, 7, 5, 9, 0, 8, 6, 1, 8, 2, 1, 7, 0, 1, 1, 7, 9, 6,
+         1, 6, 2, 9, 3, 8, 5, 2, 1, 3, 6, 3, 7, 6, 7, 7, 7, 7, 6, 7, 9, 7, 8, 5,
+         8, 0, 7, 9, 3, 3, 3, 7, 6, 2, 3, 5, 7, 7, 6, 8, 6, 5, 6, 1, 9, 6, 0, 6,
+         3, 3, 2, 2, 5, 2, 8, 7],
+        [1, 1, 8, 9, 2, 2, 2, 5, 1, 9, 3, 2, 8, 3, 5, 1, 3, 2, 2, 8, 6, 1, 9, 5,
+         6, 8, 9, 8, 1, 2, 1, 1, 7, 2, 8, 5, 7, 3, 5, 1, 8, 2, 0, 9, 7, 5, 2, 2,
+         5, 6, 5, 9, 5, 6, 9, 7, 2, 8, 1, 2, 6, 1, 8, 6, 1, 1, 5, 7, 2, 3, 0, 6,
+         7, 6, 2, 9, 3, 2, 5, 1, 1, 3, 6, 6, 7, 6, 8, 7, 7, 6, 8, 8, 9, 9, 8, 5,
+         7, 0, 0, 9, 3, 2, 3, 0, 1, 5, 3, 1, 7, 8, 8, 8, 8, 5, 2, 1, 9, 9, 7, 6,
+         8, 9, 2, 2, 5, 2, 5, 7]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0940, 0.1165, 0.1200,  ..., 0.1032, 0.1314, 0.1099],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0930, 0.1256, 0.1134,  ..., 0.1129, 0.1318, 0.1162],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0940, 0.1165, 0.1200,  ..., 0.1032, 0.1314, 0.1099],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0930, 0.1256, 0.1134,  ..., 0.1129, 0.1318, 0.1162],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[32.9984],
+        [26.5344]], device='cuda:0')
+importance_weights: tensor([[0.9984, 0.0016]], device='cuda:0')
+x0_index: tensor([0], device='cuda:0')
+x_next: tensor([[1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 4, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 4, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 4, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 4, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7],
+        [1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 4, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 4, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7]], device='cuda:0')
+t.repeat(k,1): tensor([[0.5234],
+        [0.5234]], device='cuda:0')
+x0_samples: tensor([[1, 7, 8, 3, 2, 2, 2, 5, 1, 6, 3, 2, 9, 3, 5, 1, 9, 2, 1, 2, 8, 1, 9, 1,
+         6, 6, 9, 8, 8, 0, 6, 1, 7, 8, 8, 5, 1, 3, 5, 1, 9, 2, 0, 1, 7, 5, 2, 2,
+         2, 6, 5, 1, 5, 6, 0, 7, 6, 5, 5, 9, 6, 1, 8, 0, 1, 5, 5, 2, 3, 1, 0, 9,
+         5, 6, 2, 9, 3, 5, 8, 7, 1, 3, 6, 1, 7, 6, 3, 7, 7, 6, 8, 3, 1, 2, 8, 5,
+         7, 0, 9, 9, 3, 3, 3, 9, 7, 8, 3, 7, 7, 0, 9, 8, 5, 5, 3, 1, 9, 3, 5, 6,
+         5, 5, 2, 2, 5, 2, 3, 7],
+        [1, 2, 8, 6, 2, 7, 9, 6, 9, 1, 3, 2, 9, 3, 5, 1, 7, 2, 1, 2, 5, 2, 9, 8,
+         6, 5, 9, 8, 7, 0, 9, 1, 7, 9, 8, 5, 3, 3, 5, 1, 1, 2, 0, 8, 7, 5, 2, 2,
+         7, 6, 5, 2, 5, 6, 2, 7, 9, 5, 7, 0, 6, 1, 8, 7, 1, 9, 8, 7, 9, 5, 8, 3,
+         5, 6, 2, 9, 3, 5, 6, 0, 1, 3, 6, 8, 7, 6, 5, 7, 7, 7, 0, 7, 8, 1, 8, 5,
+         1, 0, 9, 9, 3, 6, 3, 7, 0, 2, 3, 9, 7, 8, 7, 8, 1, 5, 3, 1, 9, 8, 1, 6,
+         8, 6, 2, 2, 5, 2, 8, 7]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0925, 0.1176, 0.1176,  ..., 0.1064, 0.1384, 0.1094],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0899, 0.1342, 0.1168,  ..., 0.1073, 0.1258, 0.1178],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0925, 0.1176, 0.1176,  ..., 0.1064, 0.1384, 0.1094],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0899, 0.1342, 0.1168,  ..., 0.1073, 0.1258, 0.1178],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[31.1994],
+        [29.1690]], device='cuda:0')
+importance_weights: tensor([[0.8840, 0.1160]], device='cuda:0')
+x0_index: tensor([0], device='cuda:0')
+x_next: tensor([[1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7],
+        [1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7]], device='cuda:0')
+t.repeat(k,1): tensor([[0.5156],
+        [0.5156]], device='cuda:0')
+x0_samples: tensor([[1, 8, 8, 6, 2, 7, 8, 7, 2, 6, 3, 2, 9, 3, 5, 1, 1, 2, 0, 1, 7, 3, 9, 1,
+         6, 7, 9, 8, 8, 0, 6, 1, 7, 1, 8, 5, 9, 3, 5, 1, 3, 2, 0, 2, 7, 5, 2, 2,
+         8, 6, 5, 9, 5, 6, 1, 7, 0, 2, 6, 7, 6, 1, 8, 3, 1, 8, 5, 7, 5, 5, 5, 1,
+         9, 6, 2, 9, 3, 5, 6, 2, 1, 3, 6, 5, 7, 6, 0, 7, 7, 3, 2, 2, 6, 3, 8, 5,
+         8, 0, 2, 9, 3, 3, 3, 1, 7, 3, 3, 6, 7, 3, 5, 8, 1, 5, 5, 1, 9, 3, 9, 6,
+         3, 2, 2, 2, 5, 2, 5, 7],
+        [1, 6, 8, 2, 2, 8, 5, 3, 3, 7, 3, 2, 0, 3, 5, 1, 8, 2, 8, 1, 7, 9, 9, 7,
+         6, 2, 9, 8, 8, 0, 3, 1, 7, 3, 8, 5, 9, 3, 5, 1, 8, 2, 0, 6, 7, 5, 2, 2,
+         9, 6, 5, 9, 5, 6, 7, 7, 6, 5, 3, 1, 6, 1, 8, 8, 1, 1, 5, 0, 6, 2, 9, 8,
+         1, 6, 2, 9, 3, 3, 1, 3, 1, 3, 6, 5, 7, 6, 2, 7, 7, 2, 3, 2, 3, 1, 8, 5,
+         3, 0, 1, 9, 3, 5, 3, 6, 6, 1, 3, 3, 7, 6, 1, 8, 1, 5, 3, 1, 9, 3, 3, 6,
+         6, 8, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0939, 0.1198, 0.1176,  ..., 0.1054, 0.1359, 0.1073],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0903, 0.1344, 0.1120,  ..., 0.1121, 0.1280, 0.1112],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0939, 0.1198, 0.1176,  ..., 0.1054, 0.1359, 0.1073],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0903, 0.1344, 0.1120,  ..., 0.1121, 0.1280, 0.1112],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[31.6511],
+        [36.7751]], device='cuda:0')
+importance_weights: tensor([[0.0059, 0.9941]], device='cuda:0')
+x0_index: tensor([1], device='cuda:0')
+x_next: tensor([[1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 4, 7]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7],
+        [1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+t.repeat(k,1): tensor([[0.4922],
+        [0.4922]], device='cuda:0')
+x0_samples: tensor([[1, 6, 8, 5, 2, 8, 0, 1, 6, 5, 3, 2, 7, 3, 5, 1, 6, 2, 1, 7, 3, 5, 9, 9,
+         6, 1, 9, 8, 8, 0, 6, 1, 7, 8, 8, 5, 2, 3, 5, 1, 2, 2, 0, 6, 7, 5, 2, 2,
+         2, 6, 5, 5, 5, 6, 5, 7, 7, 9, 6, 5, 6, 1, 8, 6, 1, 8, 5, 1, 1, 2, 2, 8,
+         1, 6, 2, 9, 3, 6, 8, 2, 1, 3, 6, 2, 7, 6, 0, 7, 7, 7, 9, 7, 6, 1, 8, 5,
+         8, 0, 2, 9, 3, 0, 3, 8, 6, 9, 3, 9, 7, 8, 7, 8, 2, 5, 2, 1, 9, 3, 0, 6,
+         8, 3, 2, 2, 5, 2, 1, 7],
+        [1, 9, 8, 9, 2, 0, 0, 8, 5, 6, 3, 2, 7, 3, 5, 1, 0, 2, 0, 8, 2, 5, 9, 7,
+         6, 6, 9, 8, 8, 0, 2, 1, 7, 8, 8, 5, 3, 3, 5, 1, 6, 2, 0, 1, 7, 5, 2, 2,
+         1, 6, 5, 1, 5, 6, 5, 7, 7, 6, 1, 5, 6, 1, 8, 5, 1, 9, 5, 2, 1, 9, 5, 2,
+         6, 6, 2, 9, 3, 9, 3, 8, 1, 3, 6, 6, 7, 6, 2, 7, 7, 9, 3, 2, 0, 6, 8, 5,
+         1, 0, 5, 9, 3, 2, 3, 8, 2, 8, 3, 1, 7, 5, 1, 8, 1, 5, 8, 1, 9, 3, 5, 6,
+         9, 6, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0930, 0.1191, 0.1135,  ..., 0.1103, 0.1399, 0.1079],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0930, 0.1191, 0.1135,  ..., 0.1103, 0.1399, 0.1079],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[24.1379],
+        [26.6968]], device='cuda:0')
+importance_weights: tensor([[0.0718, 0.9282]], device='cuda:0')
+x0_index: tensor([1], device='cuda:0')
+x_next: tensor([[1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 4, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7],
+        [1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+t.repeat(k,1): tensor([[0.4766],
+        [0.4766]], device='cuda:0')
+x0_samples: tensor([[1, 1, 8, 2, 2, 8, 0, 5, 1, 5, 3, 2, 9, 3, 5, 1, 0, 2, 0, 7, 6, 5, 9, 3,
+         6, 1, 9, 8, 8, 0, 5, 1, 7, 8, 8, 5, 7, 3, 5, 1, 5, 2, 0, 6, 7, 5, 2, 2,
+         6, 6, 5, 5, 5, 6, 1, 7, 5, 6, 1, 7, 6, 1, 8, 5, 1, 9, 5, 6, 3, 3, 0, 0,
+         1, 6, 2, 9, 3, 2, 8, 1, 1, 3, 6, 6, 7, 6, 5, 7, 7, 5, 6, 0, 5, 8, 8, 5,
+         6, 0, 5, 9, 3, 2, 3, 5, 3, 3, 3, 3, 7, 7, 3, 8, 3, 5, 0, 1, 9, 3, 2, 6,
+         2, 2, 2, 2, 5, 2, 1, 7],
+        [1, 5, 8, 0, 2, 2, 8, 0, 6, 1, 3, 2, 6, 3, 5, 1, 0, 2, 5, 8, 8, 2, 9, 8,
+         6, 9, 9, 8, 8, 0, 8, 1, 7, 6, 8, 5, 5, 3, 5, 1, 6, 2, 0, 5, 7, 5, 2, 2,
+         9, 6, 5, 1, 5, 6, 8, 7, 2, 0, 1, 3, 6, 1, 8, 5, 1, 0, 5, 2, 2, 7, 0, 5,
+         0, 6, 2, 9, 3, 8, 6, 6, 1, 3, 6, 1, 7, 6, 5, 7, 7, 8, 3, 5, 5, 1, 8, 5,
+         2, 0, 5, 9, 3, 3, 3, 8, 0, 8, 3, 0, 7, 3, 6, 8, 3, 5, 2, 1, 9, 3, 3, 6,
+         2, 8, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0942, 0.1114, 0.1189,  ..., 0.1053, 0.1354, 0.1143],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0942, 0.1114, 0.1189,  ..., 0.1053, 0.1354, 0.1143],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[27.2444],
+        [20.7289]], device='cuda:0')
+importance_weights: tensor([[0.9985, 0.0015]], device='cuda:0')
+x0_index: tensor([0], device='cuda:0')
+x_next: tensor([[1, 4, 8, 4, 2, 4, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[1, 4, 8, 4, 2, 8, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7],
+        [1, 4, 8, 4, 2, 8, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+t.repeat(k,1): tensor([[0.4609],
+        [0.4609]], device='cuda:0')
+x0_samples: tensor([[1, 9, 8, 9, 2, 8, 9, 3, 1, 9, 3, 2, 2, 3, 5, 1, 0, 2, 8, 6, 0, 5, 9, 9,
+         6, 3, 9, 8, 8, 0, 1, 1, 7, 5, 8, 5, 5, 3, 5, 1, 3, 2, 0, 3, 7, 5, 2, 2,
+         2, 6, 5, 9, 5, 6, 7, 7, 5, 0, 3, 5, 6, 1, 8, 7, 1, 5, 5, 8, 1, 7, 7, 6,
+         8, 6, 2, 9, 3, 3, 6, 1, 1, 3, 6, 8, 7, 6, 3, 7, 7, 8, 8, 0, 6, 0, 8, 5,
+         6, 0, 1, 9, 3, 6, 3, 9, 3, 1, 3, 9, 7, 6, 2, 8, 2, 5, 7, 1, 9, 3, 3, 6,
+         1, 6, 2, 2, 5, 2, 1, 7],
+        [1, 8, 8, 7, 2, 8, 5, 7, 2, 8, 3, 2, 7, 3, 5, 1, 0, 2, 3, 2, 9, 0, 9, 7,
+         6, 5, 9, 8, 8, 0, 1, 1, 7, 5, 8, 5, 7, 3, 5, 1, 6, 2, 0, 6, 7, 5, 2, 2,
+         3, 6, 5, 2, 5, 6, 5, 7, 3, 5, 0, 6, 6, 1, 8, 5, 1, 5, 5, 9, 6, 3, 6, 7,
+         3, 6, 2, 9, 3, 5, 3, 0, 1, 3, 6, 1, 7, 6, 0, 7, 7, 8, 5, 6, 0, 7, 8, 5,
+         2, 0, 6, 9, 3, 5, 3, 1, 1, 0, 3, 8, 7, 5, 1, 8, 7, 5, 3, 1, 9, 3, 8, 6,
+         1, 7, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0901, 0.1167, 0.1180,  ..., 0.1109, 0.1393, 0.1119],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0901, 0.1167, 0.1180,  ..., 0.1109, 0.1393, 0.1119],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[31.7932],
+        [29.0215]], device='cuda:0')
+importance_weights: tensor([[0.9411, 0.0589]], device='cuda:0')
+x0_index: tensor([0], device='cuda:0')
+x_next: tensor([[1, 4, 8, 4, 2, 8, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 4, 4, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[1, 4, 8, 4, 2, 8, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 4, 5, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7],
+        [1, 4, 8, 4, 2, 8, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 4, 5, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+t.repeat(k,1): tensor([[0.4453],
+        [0.4453]], device='cuda:0')
+x0_samples: tensor([[1, 6, 8, 6, 2, 8, 1, 2, 6, 5, 3, 2, 1, 3, 5, 1, 0, 2, 8, 0, 5, 2, 9, 6,
+         6, 2, 9, 8, 8, 0, 9, 1, 7, 9, 8, 5, 5, 3, 5, 1, 1, 2, 0, 9, 7, 5, 2, 2,
+         7, 6, 5, 5, 5, 6, 1, 7, 3, 8, 8, 5, 6, 1, 8, 9, 1, 5, 5, 2, 2, 5, 0, 8,
+         1, 6, 2, 9, 3, 7, 1, 1, 1, 3, 6, 0, 7, 6, 1, 7, 7, 3, 0, 2, 5, 0, 8, 5,
+         2, 0, 2, 9, 3, 0, 3, 0, 1, 7, 3, 2, 7, 8, 6, 8, 2, 5, 5, 1, 9, 3, 0, 6,
+         7, 2, 2, 2, 5, 2, 1, 7],
+        [1, 6, 8, 6, 2, 8, 3, 0, 6, 7, 3, 2, 8, 3, 5, 1, 0, 2, 8, 0, 3, 5, 9, 7,
+         6, 3, 9, 8, 8, 0, 5, 1, 7, 3, 8, 5, 8, 3, 5, 1, 1, 2, 0, 8, 7, 5, 2, 2,
+         3, 6, 5, 7, 5, 6, 9, 7, 6, 9, 3, 5, 6, 1, 8, 3, 1, 2, 5, 8, 1, 2, 8, 1,
+         7, 6, 2, 9, 3, 3, 6, 5, 1, 3, 6, 2, 7, 6, 9, 7, 7, 8, 2, 2, 2, 2, 8, 5,
+         3, 0, 1, 9, 3, 3, 3, 6, 5, 1, 3, 2, 7, 1, 9, 8, 1, 5, 6, 1, 9, 3, 0, 6,
+         9, 1, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0890, 0.1231, 0.1168,  ..., 0.1082, 0.1336, 0.1127],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0890, 0.1231, 0.1168,  ..., 0.1082, 0.1336, 0.1127],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[21.5588],
+        [29.5123]], device='cuda:0')
+importance_weights: tensor([[3.5132e-04, 9.9965e-01]], device='cuda:0')
+x0_index: tensor([1], device='cuda:0')
+x_next: tensor([[1, 4, 8, 4, 2, 8, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 3, 5, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[1, 4, 8, 4, 2, 8, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 3, 5, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7],
+        [1, 4, 8, 4, 2, 8, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         4, 6, 5, 4, 5, 6, 4, 7, 4, 4, 3, 5, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+t.repeat(k,1): tensor([[0.4375],
+        [0.4375]], device='cuda:0')
+x0_samples: tensor([[1, 7, 8, 5, 2, 8, 1, 7, 5, 1, 3, 2, 2, 3, 5, 1, 0, 2, 0, 3, 2, 0, 9, 2,
+         6, 3, 9, 8, 8, 0, 2, 1, 7, 8, 8, 5, 8, 3, 5, 1, 6, 2, 0, 2, 7, 5, 2, 2,
+         7, 6, 5, 6, 5, 6, 9, 7, 2, 7, 3, 5, 6, 1, 8, 7, 1, 0, 5, 3, 6, 7, 2, 1,
+         6, 6, 2, 9, 3, 3, 2, 8, 1, 3, 6, 8, 7, 6, 6, 7, 7, 2, 8, 8, 0, 1, 8, 5,
+         0, 0, 8, 9, 3, 8, 3, 9, 7, 3, 3, 2, 7, 6, 0, 8, 7, 5, 5, 1, 9, 3, 8, 6,
+         9, 0, 2, 2, 5, 2, 1, 7],
+        [1, 7, 8, 6, 2, 8, 3, 5, 9, 6, 3, 2, 8, 3, 5, 1, 0, 2, 3, 1, 6, 8, 9, 6,
+         6, 3, 9, 8, 8, 0, 0, 1, 7, 8, 8, 5, 5, 3, 5, 1, 6, 2, 0, 2, 7, 5, 2, 2,
+         2, 6, 5, 2, 5, 6, 5, 7, 6, 2, 3, 5, 6, 1, 8, 3, 1, 8, 5, 2, 5, 7, 7, 7,
+         3, 6, 2, 9, 3, 3, 5, 2, 1, 3, 6, 9, 7, 6, 1, 7, 7, 2, 0, 9, 5, 3, 8, 5,
+         7, 0, 2, 9, 3, 6, 3, 9, 5, 2, 3, 3, 7, 1, 8, 8, 1, 5, 1, 1, 9, 3, 7, 6,
+         7, 9, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0873, 0.1192, 0.1155,  ..., 0.1058, 0.1360, 0.1150],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0873, 0.1192, 0.1155,  ..., 0.1058, 0.1360, 0.1150],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[22.3315],
+        [27.6261]], device='cuda:0')
+importance_weights: tensor([[0.0050, 0.9950]], device='cuda:0')
+x0_index: tensor([1], device='cuda:0')
+x_next: tensor([[1, 4, 8, 4, 2, 8, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         2, 6, 5, 4, 5, 6, 4, 7, 4, 4, 3, 5, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[1, 4, 8, 4, 2, 8, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         2, 6, 5, 4, 5, 6, 4, 7, 4, 4, 3, 5, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7],
+        [1, 4, 8, 4, 2, 8, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         2, 6, 5, 4, 5, 6, 4, 7, 4, 4, 3, 5, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+t.repeat(k,1): tensor([[0.4297],
+        [0.4297]], device='cuda:0')
+x0_samples: tensor([[1, 5, 8, 6, 2, 8, 5, 3, 9, 0, 3, 2, 3, 3, 5, 1, 0, 2, 2, 1, 6, 9, 9, 8,
+         6, 5, 9, 8, 8, 0, 5, 1, 7, 6, 8, 5, 7, 3, 5, 1, 2, 2, 0, 6, 7, 5, 2, 2,
+         2, 6, 5, 5, 5, 6, 0, 7, 9, 0, 3, 5, 6, 1, 8, 1, 1, 0, 5, 9, 9, 9, 0, 1,
+         6, 6, 2, 9, 3, 9, 1, 3, 1, 3, 6, 1, 7, 6, 1, 7, 7, 7, 2, 0, 0, 3, 8, 5,
+         5, 0, 9, 9, 3, 2, 3, 2, 7, 6, 3, 6, 7, 7, 6, 8, 6, 5, 2, 1, 9, 3, 0, 6,
+         5, 0, 2, 2, 5, 2, 1, 7],
+        [1, 1, 8, 2, 2, 8, 8, 1, 5, 1, 3, 2, 5, 3, 5, 1, 0, 2, 2, 5, 8, 1, 9, 9,
+         6, 5, 9, 8, 8, 0, 9, 1, 7, 8, 8, 5, 8, 3, 5, 1, 8, 2, 0, 2, 7, 5, 2, 2,
+         2, 6, 5, 9, 5, 6, 9, 7, 5, 2, 3, 5, 6, 1, 8, 1, 1, 2, 5, 6, 3, 8, 8, 1,
+         6, 6, 2, 9, 3, 1, 3, 2, 1, 3, 6, 7, 7, 6, 0, 7, 7, 8, 7, 5, 9, 0, 8, 5,
+         3, 0, 3, 9, 3, 2, 3, 2, 9, 8, 3, 7, 7, 1, 5, 8, 8, 5, 9, 1, 9, 3, 0, 6,
+         9, 5, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0868, 0.1242, 0.1150,  ..., 0.1061, 0.1320, 0.1177],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0868, 0.1242, 0.1150,  ..., 0.1061, 0.1320, 0.1177],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[24.5476],
+        [21.6187]], device='cuda:0')
+importance_weights: tensor([[0.9493, 0.0507]], device='cuda:0')
+x0_index: tensor([0], device='cuda:0')
+x_next: tensor([[1, 4, 8, 4, 2, 8, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         2, 6, 5, 4, 5, 6, 4, 7, 4, 4, 3, 5, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 4, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[1, 4, 8, 4, 2, 8, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         2, 6, 5, 4, 5, 6, 4, 7, 4, 4, 3, 5, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 0, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7],
+        [1, 4, 8, 4, 2, 8, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         2, 6, 5, 4, 5, 6, 4, 7, 4, 4, 3, 5, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 0, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 4, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 4, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+t.repeat(k,1): tensor([[0.4141],
+        [0.4141]], device='cuda:0')
+x0_samples: tensor([[1, 9, 8, 8, 2, 8, 3, 6, 7, 5, 3, 2, 6, 3, 5, 1, 0, 2, 8, 0, 8, 8, 9, 5,
+         6, 2, 9, 8, 8, 0, 9, 1, 7, 8, 8, 5, 7, 3, 5, 1, 0, 2, 0, 5, 7, 5, 2, 2,
+         2, 6, 5, 8, 5, 6, 0, 7, 1, 8, 3, 5, 6, 1, 8, 1, 1, 2, 5, 1, 9, 5, 0, 6,
+         6, 6, 2, 9, 3, 8, 1, 1, 1, 3, 6, 1, 7, 6, 8, 7, 7, 6, 5, 1, 0, 5, 8, 5,
+         0, 0, 0, 9, 3, 0, 3, 2, 2, 7, 3, 8, 7, 6, 0, 8, 0, 5, 1, 1, 9, 3, 8, 6,
+         9, 6, 2, 2, 5, 2, 1, 7],
+        [1, 6, 8, 5, 2, 8, 3, 6, 0, 1, 3, 2, 9, 3, 5, 1, 0, 2, 8, 9, 1, 9, 9, 9,
+         6, 9, 9, 8, 8, 0, 9, 1, 7, 6, 8, 5, 6, 3, 5, 1, 1, 2, 0, 6, 7, 5, 2, 2,
+         2, 6, 5, 8, 5, 6, 9, 7, 8, 3, 3, 5, 6, 1, 8, 2, 1, 5, 5, 0, 1, 8, 0, 8,
+         6, 6, 2, 9, 3, 1, 1, 8, 1, 3, 6, 3, 7, 6, 6, 7, 7, 9, 9, 1, 3, 1, 8, 5,
+         0, 0, 7, 9, 3, 6, 3, 9, 3, 1, 3, 8, 7, 9, 1, 8, 8, 5, 1, 1, 9, 3, 2, 6,
+         2, 0, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0865, 0.1165, 0.1215,  ..., 0.1054, 0.1338, 0.1131],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0865, 0.1165, 0.1215,  ..., 0.1054, 0.1338, 0.1131],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[20.8680],
+        [27.9235]], device='cuda:0')
+importance_weights: tensor([[8.6197e-04, 9.9914e-01]], device='cuda:0')
+x0_index: tensor([1], device='cuda:0')
+x_next: tensor([[1, 4, 8, 4, 2, 8, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         2, 6, 5, 4, 5, 6, 4, 7, 4, 4, 3, 5, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 0, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 3, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 1, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+k: 2
+x.repeat(k,1): tensor([[1, 4, 8, 4, 2, 8, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         2, 6, 5, 4, 5, 6, 4, 7, 4, 4, 3, 5, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 0, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 3, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 1, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7],
+        [1, 4, 8, 4, 2, 8, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 4, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         2, 6, 5, 4, 5, 6, 4, 7, 4, 4, 3, 5, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 0, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 3, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 1, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         4, 4, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+t.repeat(k,1): tensor([[0.4063],
+        [0.4063]], device='cuda:0')
+x0_samples: tensor([[1, 3, 8, 7, 2, 8, 8, 9, 2, 6, 3, 2, 6, 3, 5, 1, 0, 2, 7, 8, 6, 2, 9, 6,
+         6, 9, 9, 8, 8, 0, 5, 1, 7, 0, 8, 5, 0, 3, 5, 1, 2, 2, 0, 9, 7, 5, 2, 2,
+         2, 6, 5, 0, 5, 6, 0, 7, 3, 8, 3, 5, 6, 1, 8, 7, 1, 1, 5, 5, 1, 3, 0, 2,
+         6, 6, 2, 9, 3, 7, 0, 9, 1, 3, 6, 1, 7, 6, 5, 7, 7, 7, 5, 9, 3, 0, 8, 5,
+         9, 0, 1, 9, 3, 6, 3, 3, 1, 1, 3, 7, 7, 8, 6, 8, 2, 5, 5, 1, 9, 3, 0, 6,
+         7, 2, 2, 2, 5, 2, 1, 7],
+        [1, 3, 8, 1, 2, 8, 8, 3, 1, 5, 3, 2, 5, 3, 5, 1, 0, 2, 7, 1, 6, 8, 9, 8,
+         6, 5, 9, 8, 8, 0, 2, 1, 7, 0, 8, 5, 2, 3, 5, 1, 1, 2, 0, 5, 7, 5, 2, 2,
+         2, 6, 5, 3, 5, 6, 8, 7, 1, 8, 3, 5, 6, 1, 8, 0, 1, 2, 5, 8, 7, 9, 0, 8,
+         0, 6, 2, 9, 3, 8, 3, 3, 1, 3, 6, 7, 7, 6, 1, 7, 7, 2, 9, 3, 3, 0, 8, 5,
+         5, 0, 7, 9, 3, 7, 3, 3, 5, 1, 3, 9, 7, 9, 6, 8, 6, 5, 9, 1, 9, 3, 1, 6,
+         1, 0, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+p_x0.repeat(k,1,1): tensor([[[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0878, 0.1247, 0.1153,  ..., 0.1097, 0.1334, 0.1136],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]],
+
+        [[0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0878, 0.1247, 0.1153,  ..., 0.1097, 0.1334, 0.1136],
+         [0.0000, 0.0000, 0.0000,  ..., 0.0000, 1.0000, 0.0000],
+         ...,
+         [0.0000, 0.0000, 1.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 1.0000, 0.0000,  ..., 0.0000, 0.0000, 0.0000],
+         [0.0000, 0.0000, 0.0000,  ..., 1.0000, 0.0000, 0.0000]]],
+       device='cuda:0')
+energy: tensor([[23.8413],
+        [24.0192]], device='cuda:0')
+importance_weights: tensor([[0.4556, 0.5444]], device='cuda:0')
+x0_index: tensor([0], device='cuda:0')
+x_next: tensor([[1, 4, 8, 4, 2, 8, 4, 4, 4, 4, 3, 2, 4, 3, 5, 1, 0, 2, 4, 4, 4, 4, 9, 4,
+         6, 4, 9, 8, 8, 0, 4, 1, 7, 0, 8, 5, 4, 3, 5, 1, 4, 2, 0, 4, 7, 5, 2, 2,
+         2, 6, 5, 4, 5, 6, 4, 7, 4, 4, 3, 5, 6, 1, 8, 4, 1, 4, 5, 4, 4, 4, 0, 4,
+         4, 6, 2, 9, 3, 4, 4, 4, 1, 3, 6, 4, 7, 6, 4, 7, 7, 4, 4, 4, 3, 4, 8, 5,
+         4, 0, 4, 9, 3, 4, 3, 4, 4, 1, 3, 4, 7, 4, 4, 8, 4, 5, 4, 1, 9, 3, 4, 6,
+         7, 4, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+steps: 128
+samples: tensor([[1, 7, 8, 6, 2, 8, 5, 0, 1, 9, 3, 2, 3, 3, 5, 1, 0, 2, 2, 8, 3, 8, 9, 7,
+         6, 7, 9, 8, 8, 0, 1, 1, 7, 0, 8, 5, 2, 3, 5, 1, 5, 2, 0, 7, 7, 5, 2, 2,
+         2, 6, 5, 7, 5, 6, 6, 7, 8, 3, 3, 5, 6, 1, 8, 9, 1, 8, 5, 8, 9, 2, 0, 9,
+         1, 6, 2, 9, 3, 9, 9, 1, 1, 3, 6, 6, 7, 6, 5, 7, 7, 7, 6, 7, 3, 8, 8, 5,
+         5, 0, 6, 9, 3, 7, 3, 6, 2, 1, 3, 7, 7, 8, 8, 8, 0, 5, 0, 1, 9, 3, 3, 6,
+         7, 2, 2, 2, 5, 2, 1, 7]], device='cuda:0')
+text_samples: ['<cls>CGA<eos>G<null><pad><cls>U<unk><eos><unk><unk><null><cls><pad><eos><eos>G<unk>GUCACUGG<pad><cls><cls>C<pad>G<null><eos><unk><null><cls><null><eos><pad>CC<null><eos><eos><eos>A<null>C<null>AACG<unk><unk><null>A<cls>GU<cls>G<null>GU<eos><pad>U<cls>A<eos>U<unk>UU<cls><cls><unk>AACA<null>CCCAC<unk>GG<null><null><pad>AU<unk>C<unk>A<eos><cls><unk>CCGGG<pad><null><pad><cls>U<unk><unk>AC<eos><eos><eos><null><eos><cls>C']
+Text samples: ['<cls>CGA<eos>G<null><pad><cls>U<unk><eos><unk><unk><null><cls><pad><eos><eos>G<unk>GUCACUGG<pad><cls><cls>C<pad>G<null><eos><unk><null><cls><null><eos><pad>CC<null><eos><eos><eos>A<null>C<null>AACG<unk><unk><null>A<cls>GU<cls>G<null>GU<eos><pad>U<cls>A<eos>U<unk>UU<cls><cls><unk>AACA<null>CCCAC<unk>GG<null><null><pad>AU<unk>C<unk>A<eos><cls><unk>CCGGG<pad><null><pad><cls>U<unk><unk>AC<eos><eos><eos><null><eos><cls>C']
+Generative perplexity: nan Entropy: 3.1376447677612305 Time: 1.0109777450561523

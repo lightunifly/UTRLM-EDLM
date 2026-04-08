@@ -17,7 +17,13 @@ import torch
 import transformers
 
 import utils
-from multimolecule import RnaTokenizer, UtrLmModel
+
+# multimolecule 导入使用 try-except，避免依赖问题
+try:
+    from multimolecule import RnaTokenizer, UtrLmModel
+except ImportError:
+    RnaTokenizer = None
+    UtrLmModel = None
 
 LOGGER = utils.get_logger(__name__)
 
@@ -102,6 +108,63 @@ def scientific_papers_detokenizer(x):
   x = wt_detokenizer(x)
   x = lm1b_detokenizer(x)
   return x
+
+
+class SimpleRnaTokenizer(transformers.PreTrainedTokenizer):
+  """简单的RNA Tokenizer，匹配10维词表定义。
+  
+  词表定义:
+  0: <pad>, 1: <cls>, 2: <eos>, 3: <unk>, 4: <mask>,
+  5: <null>, 6: A, 7: C, 8: G, 9: U
+  """
+  def __init__(
+    self,
+    bos_token='<cls>',
+    eos_token='<eos>',
+    pad_token='<pad>',
+    mask_token='<mask>',
+    unk_token='<unk>',
+    **kwargs):
+    self._vocab_str_to_int = {
+      '<pad>': 0,
+      '<cls>': 1,
+      '<eos>': 2,
+      '<unk>': 3,
+      '<mask>': 4,
+      '<null>': 5,
+      'A': 6,
+      'C': 7,
+      'G': 8,
+      'U': 9,
+    }
+    self._vocab_int_to_str = {v: k for k, v in self._vocab_str_to_int.items()}
+    super().__init__(
+      bos_token=bos_token,
+      eos_token=eos_token,
+      pad_token=pad_token,
+      mask_token=mask_token,
+      unk_token=unk_token,
+      **kwargs)
+
+  @property
+  def vocab_size(self) -> int:
+    return len(self._vocab_str_to_int)
+
+  def _tokenize(self, text: str, **kwargs) -> typing.List[str]:
+    # 将RNA序列拆分为单个碱基
+    return list(text.upper().strip())
+
+  def _convert_token_to_id(self, token: str) -> int:
+    return self._vocab_str_to_int.get(token, self._vocab_str_to_int['<unk>'])
+
+  def _convert_id_to_token(self, index: int) -> str:
+    return self._vocab_int_to_str.get(index, '<unk>')
+
+  def convert_tokens_to_string(self, tokens):
+    return ''.join(tokens)
+
+  def get_vocab(self) -> typing.Dict[str, int]:
+    return self._vocab_str_to_int.copy()
 
 
 class Text8Tokenizer(transformers.PreTrainedTokenizer):
@@ -301,6 +364,75 @@ def _group_texts(examples, block_size, bos, eos):
   return result
 
 
+class FASTADataset(torch.utils.data.Dataset):
+  """自定义FASTA数据集加载器，支持DNA到RNA的转换。
+  
+  词表定义 (10维):
+  0: <pad>, 1: <cls>, 2: <eos>, 3: <unk>, 4: <mask>,
+  5: <null>, 6: A, 7: C, 8: G, 9: U
+  """
+  def __init__(self, fasta_path, tokenizer, block_size=1024, mode='train'):
+    self.tokenizer = tokenizer
+    self.block_size = block_size
+    self.mode = mode
+    self.sequences = []
+    
+    # 解析FASTA文件
+    with open(fasta_path, 'r') as f:
+      current_seq = ""
+      for line in f:
+        line = line.strip()
+        if line.startswith('>'):
+          if current_seq:
+            self.sequences.append(current_seq)
+          current_seq = ""
+        else:
+          # DNA到RNA转换: T -> U
+          current_seq += line.replace('T', 'U').replace('t', 'u')
+      if current_seq:
+        self.sequences.append(current_seq)
+    
+    # 分割训练/验证集 (90%/10%)
+    split_idx = int(len(self.sequences) * 0.9)
+    if mode == 'train':
+      self.sequences = self.sequences[:split_idx]
+    else:
+      self.sequences = self.sequences[split_idx:]
+    
+    print(f"FASTA Dataset loaded: {len(self.sequences)} sequences for {mode}")
+  
+  def __len__(self):
+    return len(self.sequences)
+  
+  def __getitem__(self, idx):
+    seq = self.sequences[idx]
+    
+    # 截断或填充到block_size
+    # 预留位置给 <cls> 和 <eos>
+    max_seq_len = self.block_size - 2
+    if len(seq) > max_seq_len:
+      seq = seq[:max_seq_len]
+    
+    # 手动编码: <cls> + sequence + <eos> + padding
+    # 词表: 0:<pad>, 1:<cls>, 2:<eos>, 3:<unk>, 4:<mask>, 5:<null>, 6:A, 7:C, 8:G, 9:U
+    token_map = {'A': 6, 'C': 7, 'G': 8, 'U': 9}
+    
+    input_ids = [1]  # <cls>
+    for char in seq:
+      input_ids.append(token_map.get(char.upper(), 3))  # 3 = <unk>
+    input_ids.append(2)  # <eos>
+    
+    # Padding
+    padding_length = self.block_size - len(input_ids)
+    attention_mask = [1] * len(input_ids) + [0] * padding_length
+    input_ids = input_ids + [0] * padding_length  # 0 = <pad>
+    
+    return {
+      'input_ids': torch.tensor(input_ids, dtype=torch.long),
+      'attention_mask': torch.tensor(attention_mask, dtype=torch.long)
+    }
+
+
 def get_dataset(
     dataset_name, tokenizer, wrap, mode, cache_dir,
     block_size=1024, num_proc=len(os.sched_getaffinity(0)), streaming=False):
@@ -372,6 +504,10 @@ def get_dataset(
       'ag_news',
       cache_dir=cache_dir,
       streaming=streaming)
+  elif dataset_name == 'muscle_sequence':
+    # 直接返回FASTA数据集，不需要进一步处理
+    fasta_path = '/data/home/scxj534/run/wu/quantum/try/UTRLM-EDLM-main/Muscle_sequence.fa'
+    return FASTADataset(fasta_path, tokenizer, block_size=block_size, mode=mode)
   else:
     dataset = datasets.load_dataset(
       dataset_name,
@@ -494,7 +630,8 @@ def get_tokenizer(config):
     tokenizer = transformers.BertTokenizer.\
       from_pretrained('bert-base-uncased')
   elif config.data.tokenizer_name_or_path == 'utrlm':
-    tokenizer = RnaTokenizer.from_pretrained("multimolecule/utrlm-te_el")
+    # 使用简单的自定义Tokenizer替代RnaTokenizer，避免兼容性问题
+    tokenizer = SimpleRnaTokenizer()
   else:
     #config.data.tokenizer_name_or_path="/data/home/scxj534/.cache/huggingface/hub/models--gpt2/snapshots/607a30d783dfa663caf39e06633721c8d4cfcd7e"
     print('info:',config.data.tokenizer_name_or_path)
@@ -532,6 +669,10 @@ def get_tokenizer(config):
 def get_dataloaders(config, tokenizer, skip_train=False,
                     skip_valid=False, valid_seed=None):
   num_gpus = torch.cuda.device_count()
+  print('config.loader.batch_size:',config.loader.batch_size)
+  print('config.trainer.num_nodes:',config.trainer.num_nodes)
+  print('num_gpus:',num_gpus)
+  print('config.trainer.accumulate_grad_batches:',config.trainer.accumulate_grad_batches)
   assert (config.loader.global_batch_size
           == (config.loader.batch_size
               * config.trainer.num_nodes

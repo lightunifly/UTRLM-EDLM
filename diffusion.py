@@ -18,7 +18,13 @@ import dataloader
 import models
 import noise_schedule
 import utils
-from multimolecule import RnaTokenizer, UtrLmModel
+
+# multimolecule 导入使用 try-except，避免依赖问题
+try:
+    from multimolecule import RnaTokenizer, UtrLmModel
+except ImportError:
+    RnaTokenizer = None
+    UtrLmModel = None
 
 LOG2 = math.log(2)
 
@@ -80,7 +86,12 @@ class Diffusion(L.LightningModule):
     self.config = config
 
     self.tokenizer = tokenizer
-    self.vocab_size = self.tokenizer.vocab_size
+    # 当使用utrlm时，强制设置词表大小为10，mask_index=4（根据词表定义）
+    if self.config.backbone == 'utrlm':
+      self.vocab_size = 10
+      self.mask_index = 4  # <mask> token的索引
+    else:
+      self.vocab_size = self.tokenizer.vocab_size
     self.sampler = self.config.sampling.predictor
     self.gen_ppl_eval_model_name_or_path = self.config.eval.\
       gen_ppl_eval_model_name_or_path
@@ -90,12 +101,14 @@ class Diffusion(L.LightningModule):
     print('info:',self.config.backbone)
     #config.eval.checkpoint_path='/data/home/scxj534/.cache/huggingface/hub/models--kuleshov-group--mdlm-owt/snapshots/9e6829bb908d241a074146e4c5c095238bb5e316'
     print('info:',config.eval.checkpoint_path)
-    if (not hasattr(self.tokenizer, 'mask_token')
-        or self.tokenizer.mask_token is None):
-      self.mask_index = self.vocab_size
-      self.vocab_size += 1
-    else:
-      self.mask_index = self.tokenizer.mask_token_id
+    # 对于utrlm，mask_index已在上面设置，跳过此逻辑
+    if self.config.backbone != 'utrlm':
+      if (not hasattr(self.tokenizer, 'mask_token')
+          or self.tokenizer.mask_token is None):
+        self.mask_index = self.vocab_size
+        self.vocab_size += 1
+      else:
+        self.mask_index = self.tokenizer.mask_token_id
     #print('self.mask_index:',self.mask_index)
     self.parameterization = self.config.parameterization
     if self.config.backbone == 'dit':
@@ -115,7 +128,28 @@ class Diffusion(L.LightningModule):
       self.backbone = transformers.AutoModelForMaskedLM.from_pretrained(
         config.eval.checkpoint_path, trust_remote_code=True)
     elif self.config.backbone == 'utrlm':
-      self.backbone = UtrLmModel.from_pretrained("multimolecule/utrlm-te_el")
+      if UtrLmModel is None:
+        raise ImportError("multimolecule is not installed. Please install it first.")
+      try:
+        # 尝试加载预训练模型
+        self.backbone = UtrLmModel.from_pretrained("multimolecule/utrlm-te_el")
+      except Exception as e:
+        print(f"Warning: Could not load pretrained UTRLM: {e}")
+        print("Initializing random UTRLM model...")
+        from multimolecule import UtrLmConfig
+        config = UtrLmConfig()
+        self.backbone = UtrLmModel(config)
+      # 添加多层MLP作为LM Head，将UTRLM隐藏层维度(128)映射到10维词表
+      self.lm_head = nn.Sequential(
+          nn.Linear(128, 64),
+          nn.GELU(),
+          nn.Dropout(0.1),
+          nn.Linear(64, 32),
+          nn.GELU(),
+          nn.Dropout(0.1),
+          nn.Linear(32, self.vocab_size)  # 输出到词表维度（10维）
+      )
+      print('self.lm_head[0].bias:',self.lm_head[0].bias)
     else:
       raise ValueError(
         f'Unknown backbone: {self.config.backbone}')
@@ -337,32 +371,9 @@ class Diffusion(L.LightningModule):
     #print('x:',x)
     #print('sigma:',sigma)
     if self.config.backbone == 'utrlm':
-      #print('x:',x)
-      #print('x.shape:',x.shape,flush=True)
       with torch.cuda.amp.autocast(dtype=torch.float32):
-        logits = self.backbone(x)
-      #print(self.backbone)
-      #print('self.backbone.pooler.dense:',self.backbone.pooler.dense)
-      #print('self.backbone.pooler.dense.bias:',self.backbone.pooler.dense.bias)
-      #logits = self.backbone(x)
-      #print('logits:',logits)
-      #print('logits.last_hidden_state.shape:',logits.last_hidden_state.shape)
-      #print('logits.pooler_output.shape:',logits.pooler_output.shape)
-      #self.backbone = UtrLmModel.from_pretrained("multimolecule/utrlm-te_el").to('cuda')
-      #logits = self.backbone(x)
-      #print('x:',x)
-      #print('x.shape:',x.shape,flush=True)
-      #print('logits:',logits)
-      #self._d3pm_parameterization(logits=logits.pooler_output)
-
-      logits = logits.last_hidden_state
-      #print('logits:',logits)
-      #print('logits.shape:',logits.shape)
-      #print('x:',x)
-      #print('x.shape:',x.shape,flush=True)
-      #print('sigma:',sigma)
-      #print('sigma.shape:',sigma.shape)
-      #print('mark point A1')
+        hidden_states = self.backbone(x).last_hidden_state  # [batch, seq, 128]
+        logits = self.lm_head(hidden_states)  # [batch, seq, vocab_size(10)]
     else:
       with torch.cuda.amp.autocast(dtype=torch.float32):
         logits = self.backbone(x, sigma)
@@ -1124,6 +1135,8 @@ class EBM(Diffusion):
       self.ebm = transformers.AutoModelForMaskedLM.from_pretrained(
         config.eval.checkpoint_path, trust_remote_code=True).backbone
     elif self.config.ebm_backbone == 'utrlm':
+      if UtrLmModel is None:
+        raise ImportError("multimolecule is not installed. Please install it first.")
       self.ebm = UtrLmModel.from_pretrained("multimolecule/utrlm-te_el")
     elif self.config.ebm_backbone == 'dit':
       self.ebm = models.dit.DIT(
@@ -1246,6 +1259,17 @@ class EBM(Diffusion):
           #print('energy_diffusion:',energy_diffusion)
           #print('energy:',energy)
 
+      elif self.config.ebm_backbone == 'utrlm':
+        # UTRLM作为EBM的处理
+        with torch.cuda.amp.autocast(dtype=torch.float32):
+          # 使用UTRLM编码xt和x0
+          xt_hidden = self.ebm(xt).last_hidden_state  # [batch, seq, 128]
+          x0_hidden = self.ebm(x0).last_hidden_state  # [batch, seq, 128]
+          
+          # 简单的能量计算：xt和x0的隐藏状态差异
+          # 这里使用均方误差作为能量
+          energy = ((xt_hidden - x0_hidden) ** 2).mean(dim=-1).sum(dim=-1, keepdim=True)
+          
       else:
         raise ValueError(
           f'Unknown backbone: {self.config.ebm_backbone}')
@@ -1408,6 +1432,11 @@ class EBM(Diffusion):
         log_p_phi = - energy_pos + energy_neg
       elif self.config.ebm_backbone == 'ar':
         log_p_phi = - energy_pos  # self normalized, so ignore partition function
+      elif self.config.ebm_backbone == 'utrlm':
+        # UTRLM作为EBM，能量差作为log概率
+        log_p_phi = - energy_pos + energy_neg
+      else:
+        raise ValueError(f'Unknown ebm_backbone: {self.config.ebm_backbone}')
       # Assuming x0 is a full sequence of valid tokens
       log_p_phi = log_p_phi / log_p_theta.shape[-1]
 

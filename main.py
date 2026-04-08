@@ -1,6 +1,7 @@
 import os
 os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
-os.environ['TRANSFORMERS_OFFLINE'] = '1'  # 强制离线模式
+# 注释掉强制离线模式，允许下载UTRLM模型
+os.environ['TRANSFORMERS_OFFLINE'] = '1'
 os.environ['HF_HUB_OFFLINE'] = '1'
 
 import fsspec
@@ -33,7 +34,7 @@ def _load_from_checkpoint(config, tokenizer):
       config, tokenizer=tokenizer).to('cuda')
   
   #print('info ckpt_path:',config.eval.ckpt_path)
-  return diffusion.EBM(config, tokenizer=tokenizer).to('cuda')
+  #return diffusion.EBM(config, tokenizer=tokenizer).to('cuda')
   return diffusion.EBM.load_from_checkpoint(
     config.eval.checkpoint_path,
     tokenizer=tokenizer,
@@ -108,6 +109,7 @@ def generate_samples(config, logger, tokenizer):
   print('num_sample_batches:', config.sampling.num_sample_batches)
   print('semi_ar:', config.sampling.semi_ar)
   print('model:', model)
+  print('model.lm_head[0].bias:', model.lm_head[0].bias)
   #print('model.config:', model.config)
   #print('model.backbone:', model.backbone)
   #print('model.ebm:', model.ebm)
@@ -144,7 +146,8 @@ def generate_samples(config, logger, tokenizer):
       # Generative Perplexity Metrics
       text_samples = model.tokenizer.batch_decode(samples)
       print('text_samples:', text_samples)
-      model.compute_generative_perplexity(text_samples)
+      if config.eval.compute_generative_perplexity:
+        model.compute_generative_perplexity(text_samples)
   print('Text samples:', text_samples)
   if not config.sampling.semi_ar:
     print('Generative perplexity:',

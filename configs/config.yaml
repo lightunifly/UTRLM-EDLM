@@ -1,7 +1,7 @@
 defaults:
   - _self_
   - /callbacks: [checkpoint_every_n_steps, checkpoint_monitor, learning_rate_monitor]
-  - /data: openwebtext
+  - /data: muscle_sequence
   - /model: small
   - /strategy: ddp
   - /noise: loglinear
@@ -21,7 +21,7 @@ seed: 1
 path: /data/home/scxj534/run/wu/quantum/Energy-Diffusion-LLM-main/configs
 
 loader:
-  global_batch_size: 512
+  global_batch_size: 32
   eval_global_batch_size: ${.global_batch_size}
   # Note: batch_size and eval_batch_size are **per machine**
   batch_size: ${div_up:${.global_batch_size}, ${eval:${trainer.devices} * ${trainer.num_nodes}}}
@@ -59,7 +59,8 @@ training:
 eval:
   #checkpoint_path: "/data/home/scxj534/wu/quantum/Energy-Diffusion-LLM-main/checkpoints/ar.ckpt"
   #checkpoint_path: "/data/home/scxj534/.cache/huggingface/hub/models--kuleshov-group--mdlm-owt/snapshots/9e6829bb908d241a074146e4c5c095238bb5e316"
-  checkpoint_path: kuleshov-group/mdlm-owt
+  #checkpoint_path: kuleshov-group/mdlm-owt
+  checkpoint_path: /data/home/scxj534/run/wu/bakfile/checkpoints/last.ckpt
   #ckpt_path: "/data/home/scxj534/.cache/huggingface/hub/checkpoints/mdlm.ckpt"
   # Used to evaluate a checkpoint after training.
   disable_ema: False
@@ -88,11 +89,11 @@ trainer:
   gradient_clip_val: 1.0
   precision: 'bf16'
   num_sanity_val_steps: 2
-  max_steps: 1_000_000
+  max_steps: 10_000
   log_every_n_steps: 10
   limit_train_batches: 1.0   # train on full dataset, can be used to toggle quick run
   limit_val_batches: 1.0     # validate on full dataset, can be used to toggle quick run
-  val_check_interval: 10000
+  val_check_interval: 10
 
 wandb:
   project: text-diffusion
@@ -115,7 +116,7 @@ hydra:
 checkpointing:
   # Use custom `save_dir` if, e.g., saving to S3 bucket, otherwise leave this parameter as is
   #save_dir: ${cwd:}
-  save_dir: /data/home/scxj534/wu/quantum/Energy-Diffusion-LLM-main/
+  save_dir: /data/home/scxj534/run/wu/bakfile/
   # Note: `checkpoints` path should correspond to `checkpoint_every_n_steps.dirpath`
   resume_from_ckpt: true
   resume_ckpt_path: ${.save_dir}/checkpoints/last.ckpt
