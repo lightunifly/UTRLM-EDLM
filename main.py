@@ -1,0 +1,306 @@
+import os
+os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
+import re
+import glob
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+# 注释掉强制离线模式，允许下载UTRLM模型
+# os.environ['TRANSFORMERS_OFFLINE'] = '1'
+# os.environ['HF_HUB_OFFLINE'] = '1'
+
+import fsspec
+import hydra
+import lightning as L
+import omegaconf
+import rich.syntax
+import rich.tree
+import torch
+
+import dataloader
+import diffusion
+import utils
+
+import time
+
+omegaconf.OmegaConf.register_new_resolver(
+  'cwd', os.getcwd)
+omegaconf.OmegaConf.register_new_resolver(
+  'device_count', torch.cuda.device_count)
+omegaconf.OmegaConf.register_new_resolver(
+  'eval', eval)
+omegaconf.OmegaConf.register_new_resolver(
+  'div_up', lambda x, y: (x + y - 1) // y)
+
+
+def _load_from_checkpoint(config, tokenizer):
+  if config.ebm_backbone == 'ar':
+    return diffusion.EBM(
+      config, tokenizer=tokenizer).to('cuda')
+  
+  #print('info ckpt_path:',config.eval.ckpt_path)
+  return diffusion.EBM(config, tokenizer=tokenizer).to('cuda')
+  return diffusion.EBM.load_from_checkpoint(
+    config.eval.checkpoint_path,
+    tokenizer=tokenizer,
+    config=config)
+
+
+@L.pytorch.utilities.rank_zero_only
+def _print_config(
+  config: omegaconf.DictConfig,
+  resolve: bool = True,
+  save_cfg: bool = True) -> None:
+  """Prints content of DictConfig using Rich library and its tree structure.
+  
+  Args:
+    config (DictConfig): Configuration composed by Hydra.
+    resolve (bool): Whether to resolve reference fields of DictConfig.
+    save_cfg (bool): Whether to save the configuration tree to a file.
+  """
+
+  style = 'dim'
+  tree = rich.tree.Tree('CONFIG', style=style, guide_style=style)
+
+  fields = config.keys()
+  for field in fields:
+    branch = tree.add(field, style=style, guide_style=style)
+
+    config_section = config.get(field)
+    branch_content = str(config_section)
+    if isinstance(config_section, omegaconf.DictConfig):
+      branch_content = omegaconf.OmegaConf.to_yaml(
+        config_section, resolve=resolve)
+
+    branch.add(rich.syntax.Syntax(branch_content, 'yaml'))
+  rich.print(tree)
+  if save_cfg:
+    with fsspec.open(
+      '{}/config_tree.txt'.format(
+        config.checkpointing.save_dir), 'w') as fp:
+      rich.print(tree, file=fp)
+
+
+@L.pytorch.utilities.rank_zero_only
+def _print_batch(train_ds, valid_ds, tokenizer, k=64):
+  for dl_type, dl in [
+    ('train', train_ds), ('valid', valid_ds)]:
+    print(f'Printing {dl_type} dataloader batch.')
+    batch = next(iter(dl))
+    print('Batch input_ids.shape', batch['input_ids'].shape)
+    first = batch['input_ids'][0, :k]
+    last = batch['input_ids'][0, -k:]
+    print(f'First {k} tokens:', tokenizer.decode(first))
+    print('ids:', first)
+    print(f'Last {k} tokens:', tokenizer.decode(last))
+    print('ids:', last)
+
+
+def generate_samples(config, logger, tokenizer):
+  logger.info('Generating samples.')
+  model = _load_from_checkpoint(config=config,
+                                tokenizer=tokenizer)
+  model.gen_ppl_metric.reset()
+  model.entropy_metric.reset()
+  model.time_metric.reset()
+
+  if config.eval.disable_ema:
+    logger.info('Disabling EMA.')
+    model.ema = None
+  stride_length = config.sampling.stride_length
+  print('stride_length:', config.sampling.stride_length)
+  num_strides = config.sampling.num_strides
+  print('num_strides:', config.sampling.num_strides)
+  print('num_sample_batches:', config.sampling.num_sample_batches)
+  print('semi_ar:', config.sampling.semi_ar)
+  print('model:', model)
+  #print('model.config:', model.config)
+  #print('model.backbone:', model.backbone)
+  #print('model.ebm:', model.ebm)
+  #print('model.ema:', model.ema)
+  #all_attributes = dir(model)
+  #for attr in all_attributes:
+  #    print(f"  {attr}")
+      #value = getattr(model,attr)
+      #print('info:',f" {attr}: {value}")
+  #torch.save(model,'model.pt')
+  for _ in range(config.sampling.num_sample_batches):
+    if config.sampling.semi_ar:
+      _, intermediate_samples, _ = model.restore_model_and_semi_ar_sample(
+        stride_length=stride_length,
+        num_strides=num_strides,
+        dt=1 / config.sampling.steps)
+      text_samples = intermediate_samples[-1]
+      # Note: Samples generated using semi-ar method
+      # need to to be processed before computing generative perplexity
+      # since these samples contain numerous <|endoftext|> tokens
+      # and diffusion.compute_generative_perplexity() discards
+      # any text after the first EOS token.
+    else:
+      time_start = time.time()
+      samples = model.restore_model_and_sample(
+        num_steps=config.sampling.steps)
+      print('steps:', config.sampling.steps)
+      print('samples:', samples)
+      time_end = time.time()
+      # Time Metrics
+      model.time_metric.update(time_end - time_start)
+      # Entropy Metrics
+      model.compute_entropy(samples)
+      # Generative Perplexity Metrics
+      text_samples = model.tokenizer.batch_decode(samples)
+      print('text_samples:', text_samples)
+      if config.eval.compute_generative_perplexity:
+        model.compute_generative_perplexity(text_samples)
+  print('Text samples:', text_samples)
+  if not config.sampling.semi_ar:
+    print('Generative perplexity:',
+        model.gen_ppl_metric.compute().item(),
+        'Entropy:',
+        model.entropy_metric.compute().item(),
+        'Time:',
+        model.time_metric.compute().item())
+  return text_samples
+
+
+def _ppl_eval(config, logger, tokenizer):
+  logger.info('Starting Zero Shot Eval.')
+
+  model = _load_from_checkpoint(config=config,
+                                tokenizer=tokenizer)
+  if config.eval.disable_ema:
+    logger.info('Disabling EMA.')
+    model.ema = None
+
+  wandb_logger = None
+  if config.get('wandb', None) is not None:
+    wandb_logger = L.pytorch.loggers.WandbLogger(
+      config=omegaconf.OmegaConf.to_object(config),
+      ** config.wandb)
+  callbacks = []
+  if 'callbacks' in config:
+    for _, callback in config.callbacks.items():
+      callbacks.append(hydra.utils.instantiate(callback))
+  trainer = hydra.utils.instantiate(
+    config.trainer,
+    default_root_dir=os.getcwd(),
+    callbacks=callbacks,
+    strategy=hydra.utils.instantiate(config.strategy),
+    logger=wandb_logger)
+  _, valid_ds = dataloader.get_dataloaders(
+    config, tokenizer, skip_train=True, valid_seed=config.seed)
+  trainer.validate(model, valid_ds)
+
+
+def _train(config, logger, tokenizer):
+  logger.info('Starting Training.')
+  wandb_logger = None
+  if config.get('wandb', None) is not None:
+    wandb_logger = L.pytorch.loggers.WandbLogger(
+      config=omegaconf.OmegaConf.to_object(config),
+      ** config.wandb)
+
+  if (config.checkpointing.resume_from_ckpt
+      and config.checkpointing.resume_ckpt_path is not None
+      and utils.fsspec_exists(
+        config.checkpointing.resume_ckpt_path)):
+    ckpt_path = config.checkpointing.resume_ckpt_path
+  else:
+    ckpt_path = None
+
+  # Lightning callbacks
+  callbacks = []
+  if 'callbacks' in config:
+    for _, callback in config.callbacks.items():
+      callbacks.append(hydra.utils.instantiate(callback))
+
+  train_ds, valid_ds = dataloader.get_dataloaders(
+    config, tokenizer)
+  _print_batch(train_ds, valid_ds, tokenizer)
+
+  model = diffusion.EBM(
+    config, tokenizer=valid_ds.tokenizer)
+
+  trainer = hydra.utils.instantiate(
+    config.trainer,
+    default_root_dir=os.getcwd(),
+    callbacks=callbacks,
+    strategy=hydra.utils.instantiate(config.strategy),
+    logger=wandb_logger)
+  trainer.fit(model, train_ds, valid_ds, ckpt_path=ckpt_path)
+  _plot_loss_curve()
+
+
+def _plot_loss_curve():
+  """训练结束后自动从最新output.log中解析val/nll并绘图"""
+  try:
+    log_files = glob.glob(
+      os.path.join(os.getcwd(), 'wandb', '*', 'files', 'output.log'))
+    if not log_files:
+      print('No output.log found, skip plotting.')
+      return
+    log_file = sorted(log_files)[-1]  # 取最新的
+    print(f'Plotting loss from: {log_file}')
+
+    steps_best, vals_best = [], []
+    steps_all, vals_all = [], []
+    with open(log_file) as f:
+      for line in f:
+        m = re.search(r"global step (\d+):.*val/nll.*?(-?[\d.]+)\s+\(best", line)
+        if m:
+          steps_best.append(int(m.group(1)))
+          vals_best.append(float(m.group(2)))
+        m2 = re.search(r"global step (\d+):.*val/nll.*?(-?[\d.]+)", line)
+        if m2:
+          steps_all.append(int(m2.group(1)))
+          vals_all.append(float(m2.group(2)))
+
+    if not steps_all:
+      print('No val/nll records found, skip plotting.')
+      return
+
+    fig, ax = plt.subplots(figsize=(12, 5))
+    ax.plot(steps_all, vals_all, 'lightblue', linewidth=1, alpha=0.6, label='val/nll (all)')
+    if steps_best:
+      ax.plot(steps_best, vals_best, 'b-o', markersize=4,
+              linewidth=1.5, label='val/nll (best records)')
+    ax.axhline(y=0, color='gray', linestyle='--', alpha=0.5)
+    ax.set_xlabel('Global Step', fontsize=12)
+    ax.set_ylabel('val/nll', fontsize=12)
+    ax.set_title('UTRLM-EDLM Training: val/nll Loss Curve', fontsize=13)
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    save_path = os.path.join(os.getcwd(), 'val_nll_curve.png')
+    plt.savefig(save_path, dpi=150)
+    plt.close()
+    print(f'Loss curve saved to: {save_path}')
+  except Exception as e:
+    print(f'Warning: Failed to plot loss curve: {e}')
+
+
+@hydra.main(version_base=None, config_path='configs',
+            config_name='config')
+def main(config):
+  """Main entry point for training."""
+  print('points',flush=True)
+  L.seed_everything(config.seed)
+  print(config,flush=True)
+  _print_config(config, resolve=True, save_cfg=True)
+  
+  logger = utils.get_logger(__name__)
+  tokenizer = dataloader.get_tokenizer(config)
+
+  if config.mode == 'sample_eval':
+    generate_samples(config, logger, tokenizer)
+  elif config.mode == 'ppl_eval':
+    _ppl_eval(config, logger, tokenizer)
+  else:
+    _train(config, logger, tokenizer)
+
+
+#if __name__ == '__main__':
+#  print('in main.py')
+#  main()
+print('in main.py',flush=True)
+main()

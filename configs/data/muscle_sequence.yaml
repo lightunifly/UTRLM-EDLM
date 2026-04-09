@@ -1,0 +1,6 @@
+train: muscle_sequence
+valid: muscle_sequence
+tokenizer_name_or_path: utrlm
+cache_dir: ${path}/data
+wrap: False
+streaming: False
