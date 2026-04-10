@@ -131,7 +131,6 @@ class Diffusion(L.LightningModule):
       if UtrLmModel is None:
         raise ImportError("multimolecule is not installed. Please install it first.")
       try:
-        # 尝试加载预训练模型
         self.backbone = UtrLmModel.from_pretrained("multimolecule/utrlm-te_el")
       except Exception as e:
         print(f"Warning: Could not load pretrained UTRLM: {e}")
@@ -139,7 +138,9 @@ class Diffusion(L.LightningModule):
         from multimolecule import UtrLmConfig
         config = UtrLmConfig()
         self.backbone = UtrLmModel(config)
-      # 添加多层MLP作为LM Head，将UTRLM隐藏层维度(128)映射到10维词表
+      self.backbone.eval()
+      for p in self.backbone.parameters():
+        p.requires_grad = False
       self.lm_head = nn.Sequential(
           nn.Linear(128, 64),
           nn.GELU(),
@@ -734,7 +735,8 @@ class Diffusion(L.LightningModule):
     optimizer = torch.optim.AdamW(
       itertools.chain(self.noise.parameters(),
                       self.ebm.parameters(),
-                      self.ebm_energy_proj.parameters() if hasattr(self, 'ebm_energy_proj') else [],
+                      self.lm_head.parameters() if hasattr(self, 'lm_head') else [],
+                      self.ebm_vocab_proj.parameters() if hasattr(self, 'ebm_vocab_proj') else [],
                       self.ebm_energy_head.parameters() if hasattr(self, 'ebm_energy_head') else []),
       lr=self.config.optim.lr,
       betas=(self.config.optim.beta1,
@@ -1345,26 +1347,6 @@ class EBM(Diffusion):
     import copy
     from omegaconf import open_dict
 
-    ############################
-    # Load pretrained diffusion as backbone
-    ############################
-    print('info before config_dif:',config)
-    config_diffusion = copy.deepcopy(config)
-    with open_dict(config_diffusion):
-      config_diffusion.backbone = 'hf_dit' # Load pretrained diffusion as backbone
-      config_diffusion.eval.checkpoint_path = 'kuleshov-group/mdlm-owt' # Path to the pretrained diffusion model
-    print('info after config_dif:',config)
-
-    #super().__init__(config_diffusion, tokenizer)
-    super().__init__(config, tokenizer)
-
-    self.backbone.eval()
-    for p in self.backbone.parameters():
-      p.requires_grad = False
-    ############################
-    # Finish loading pretrained diffusion as backbone
-    ############################
-
     if self.config.ebm_backbone == 'hf_dit':
       self.ebm = transformers.AutoModelForMaskedLM.from_pretrained(
         config.eval.checkpoint_path, trust_remote_code=True).backbone
@@ -1372,9 +1354,9 @@ class EBM(Diffusion):
       if UtrLmModel is None:
         raise ImportError("multimolecule is not installed. Please install it first.")
       self.ebm = UtrLmModel.from_pretrained("multimolecule/utrlm-te_el")
-      # 添加投影层：拼接后 [B,L,2*D] → [B,L,D] → 能量标量
+      
       hidden_size = 128  # UTRLM hidden size
-      self.ebm_energy_proj = nn.Linear(2 * hidden_size, hidden_size)
+      self.ebm_vocab_proj = nn.Linear(2 * hidden_size, hidden_size)
       self.ebm_energy_head = nn.Linear(hidden_size, 1)
     elif self.config.ebm_backbone == 'dit':
       self.ebm = models.dit.DIT(
@@ -1410,7 +1392,6 @@ class EBM(Diffusion):
         nn.Linear(config.model.hidden_size, 1, bias=False),
       )
 
-    self.backbone.ebm = self.ebm # Set the EBM as part of the backbone
     if self.config.training.ema > 0:
       self.ema = models.ema.ExponentialMovingAverage(
         itertools.chain(self.backbone.parameters(),
@@ -1494,25 +1475,27 @@ class EBM(Diffusion):
       #print('energy:',energy)
 
     elif self.config.ebm_backbone == 'utrlm':
-      # UTRLM作为EBM的处理 - 拼接x0和x0_neg
-      # 注意：这里需要同时传入 x0 和 x0_neg 进行拼接
-      # 由于ebm_forward的x0参数在这里实际是x0或x0_neg，需要特殊处理
-      if x0_neg is not None:
-        # 传入x0_neg时：计算xt+x0_neg的能量（负样本）
-        xt_hidden = self.ebm(xt).last_hidden_state  # [batch, seq, 128]
-        x0_neg_hidden = self.ebm(x0_neg).last_hidden_state  # [batch, seq, 128]
-        concat_hidden = torch.cat([xt_hidden, x0_neg_hidden], dim=-1)  # [batch, seq, 256]
+      # UTRLM词级拼接：词嵌入拼接 → 投影 → encoder → masked mean pooling → 能量
+      xt_emb = self.ebm.embeddings.word_embeddings(indices)  # [B, L, 128]
+      x0_emb = self.ebm.embeddings.word_embeddings(x0)       # [B, L, 128]
+      x = self.ebm_vocab_proj(torch.cat([xt_emb, x0_emb], dim=-1))  # [B, L, 256] → [B, L, 128]
+      # 将attention_mask传入encoder，屏蔽pad位置的注意力
+      if attention_mask is not None:
+        # encoder需要 [B, 1, 1, L] 格式的扩展mask
+        extended_mask = self.ebm.get_extended_attention_mask(
+          attention_mask, x.shape[:2], x.device)
       else:
-        # 未传入x0_neg时：计算x0+xt的能量（过渡，实际在_forward_pass_diffusion中处理）
-        xt_hidden = self.ebm(xt).last_hidden_state  # [batch, seq, 128]
-        x0_hidden = self.ebm(x0).last_hidden_state  # [batch, seq, 128]
-        concat_hidden = torch.cat([xt_hidden, x0_hidden], dim=-1)
-      
-      # 线性映射回原维度 → [batch, seq, 128]
-      proj_hidden = torch.relu(self.ebm_energy_proj(concat_hidden))
-      
-      # 映射到能量标量 → [batch, seq, 1] → [batch, 1]
-      energy = self.ebm_energy_head(proj_hidden).sum(dim=1, keepdim=True)
+        extended_mask = None
+      encoder_out = self.ebm.encoder(x, attention_mask=extended_mask).last_hidden_state  # [B, L, 128]
+
+      if attention_mask is not None:
+        pooling_mask = attention_mask.clone()
+        pooling_mask[:, 0] = 0  
+        mask = pooling_mask.unsqueeze(-1).float()  # [B, L, 1]
+        mean_pool = (encoder_out * mask).sum(dim=1) / mask.sum(dim=1).clamp(min=1)  # [B, 128]
+      else:
+        mean_pool = encoder_out[:, 1:, :].mean(dim=1)  # 跳过位置0(<cls>)
+      energy = self.ebm_energy_head(mean_pool)  # [B, 1]
 
     else:
       raise ValueError(
@@ -1593,7 +1576,6 @@ class EBM(Diffusion):
       else:
         unet_conditioning = self.noise(t)[0]
         x = self.forward(x, unet_conditioning).argmax(dim=-1)
-      # Preserve <cls> at position 0
       x[:, 0] = 1
     return x
   
@@ -1631,22 +1613,14 @@ class EBM(Diffusion):
     x0_neg = _sample_categorical(log_p_x0.exp(), num_samples=k)  # (batch_size * k, seq_len)
     
     if self.config.ebm_backbone == 'utrlm':
-      # UTRLM: x0+x0_neg为正样本对，xt+x0_neg为负样本对
-      x0_hidden = self.ebm(x0).last_hidden_state  # [B, L, 128]
-      x0_neg_hidden = self.ebm(x0_neg).last_hidden_state  # [B, L, 128]
-      
-      # 正样本: x0 + x0_neg 拼接 → [B, L, 256]
-      pos_concat = torch.cat([x0_hidden, x0_neg_hidden], dim=-1)
-      pos_proj = torch.relu(self.ebm_energy_proj(pos_concat))  # [B, L, 128]
-      pos_pooled = pos_proj.mean(dim=1)  # 池化 → [B, 128]
-      energy_pos = self.ebm_energy_head(pos_pooled)  # 映射 → [B, 1]
-      
-      # 负样本: xt + x0_neg 拼接
-      xt_hidden = self.ebm(xt).last_hidden_state  # [B, L, 128]
-      neg_concat = torch.cat([xt_hidden, x0_neg_hidden], dim=-1)  # [B, L, 256]
-      neg_proj = torch.relu(self.ebm_energy_proj(neg_concat))  # [B, L, 128]
-      neg_pooled = neg_proj.mean(dim=1)  # 池化 → [B, 128]
-      energy_neg = self.ebm_energy_head(neg_pooled)  # 映射 → [B, 1]
+      energy_pos = self.ebm_forward(xt, unet_conditioning, x0=x0_pos,
+                                    attention_mask=attention_mask)
+      energy_neg = self.ebm_forward(xt.repeat(k, 1),
+                                    unet_conditioning.repeat(k, 1),
+                                    x0=x0_neg,
+                                    attention_mask=attention_mask.repeat(k, 1)
+                                    ).view(x0.shape[0], k, -1)
+      energy_neg = energy_neg[:, 0]
     else:
       # 其他分支: 使用原有逻辑
       energy_pos = self.ebm_forward(xt, unet_conditioning, x0_pos, log_p_x0, attention_mask)
