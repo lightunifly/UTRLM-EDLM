@@ -131,7 +131,6 @@ class Diffusion(L.LightningModule):
       if UtrLmModel is None:
         raise ImportError("multimolecule is not installed. Please install it first.")
       try:
-        # 尝试加载预训练模型
         self.backbone = UtrLmModel.from_pretrained("multimolecule/utrlm-te_el")
       except Exception as e:
         print(f"Warning: Could not load pretrained UTRLM: {e}")
@@ -139,7 +138,9 @@ class Diffusion(L.LightningModule):
         from multimolecule import UtrLmConfig
         config = UtrLmConfig()
         self.backbone = UtrLmModel(config)
-      # 添加多层MLP作为LM Head，将UTRLM隐藏层维度(128)映射到10维词表
+      self.backbone.eval()
+      for p in self.backbone.parameters():
+        p.requires_grad = False
       self.lm_head = nn.Sequential(
           nn.Linear(128, 64),
           nn.GELU(),
@@ -149,7 +150,6 @@ class Diffusion(L.LightningModule):
           nn.Dropout(0.1),
           nn.Linear(32, self.vocab_size)  # 输出到词表维度（10维）
       )
-      print('self.lm_head[0].bias:',self.lm_head[0].bias)
     else:
       raise ValueError(
         f'Unknown backbone: {self.config.backbone}')
@@ -371,12 +371,11 @@ class Diffusion(L.LightningModule):
     #print('x:',x)
     #print('sigma:',sigma)
     if self.config.backbone == 'utrlm':
-      with torch.cuda.amp.autocast(dtype=torch.float32):
-        hidden_states = self.backbone(x).last_hidden_state  # [batch, seq, 128]
-        logits = self.lm_head(hidden_states)  # [batch, seq, vocab_size(10)]
+      hidden_states = self.backbone(x).last_hidden_state  # [batch, seq, 128]
+      logits = self.lm_head(hidden_states)  # [batch, seq, vocab_size(10)]
+
     else:
-      with torch.cuda.amp.autocast(dtype=torch.float32):
-        logits = self.backbone(x, sigma)
+      logits = self.backbone(x, sigma)
     
     if self.parameterization == 'subs':
       return self._subs_parameterization(logits=logits,
@@ -473,7 +472,226 @@ class Diffusion(L.LightningModule):
     assert self.valid_metrics.nll.weight == 0
 
   def validation_step(self, batch, batch_idx):
-    return self._compute_loss(batch, prefix='val')
+    loss = self._compute_loss(batch, prefix='val')
+    if batch_idx == 0 and self.trainer.global_rank == 0:
+      try:
+        import os
+        token_map = {0:'<pad>',1:'<cls>',2:'<eos>',3:'<unk>',4:'<mask>',
+                     5:'<null>',6:'A',7:'C',8:'G',9:'U'}
+        log_dir = self.trainer.default_root_dir
+        log_path = os.path.join(log_dir, 'val_samples.log')
+        metrics_path = os.path.join(log_dir, 'val_metrics.log')
+        
+        # ===== 从全MASK采样生成序列 =====
+        # 生成数量 = 训练数据量，一半100一半200
+        train_ds = self.trainer.train_dataloader
+        if hasattr(train_ds, 'dataset'):
+          total_train = len(train_ds.dataset)
+        else:
+          total_train = 1131  # fallback: 1257 * 0.9
+        half_count = total_train // 2
+        gen_batch_size = 32  # 分批生成避免OOM
+        
+        with torch.no_grad():
+          # 分批生成长度100的序列
+          all_100 = []
+          for start in range(0, half_count, gen_batch_size):
+            bs = min(gen_batch_size, half_count - start)
+            all_100.append(self._sample_with_length(100, bs))
+          samples_100 = torch.cat(all_100, dim=0)
+          
+          # 分批生成长度200的序列
+          rest_count = total_train - half_count
+          all_200 = []
+          for start in range(0, rest_count, gen_batch_size):
+            bs = min(gen_batch_size, rest_count - start)
+            all_200.append(self._sample_with_length(200, bs))
+          samples_200 = torch.cat(all_200, dim=0)
+        
+        # 写入样本日志（只记录前2条）
+        with open(log_path, 'a') as f:
+          f.write(f'\n=== Step {self.global_step} | val/nll={loss.item():.4f} | gen_100={samples_100.shape[0]} gen_200={samples_200.shape[0]} ===\n')
+          f.write(f'[Length 100 samples]\n')
+          for i in range(min(2, samples_100.shape[0])):
+            seq = ''.join([token_map.get(t.item(), f'[{t.item()}]') for t in samples_100[i]])
+            f.write(f'  [{i}] {seq}\n')
+          f.write(f'[Length 200 samples]\n')
+          for i in range(min(2, samples_200.shape[0])):
+            seq = ''.join([token_map.get(t.item(), f'[{t.item()}]') for t in samples_200[i]])
+            f.write(f'  [{i}] {seq}\n')
+        
+        # 计算指标
+        metrics = self._compute_generation_metrics_v2(samples_100, samples_200, batch)
+        
+        # 写入指标日志
+        with open(metrics_path, 'a') as f:
+          f.write(f'=== Step {self.global_step} ===\n')
+          f.write(f'  Total_gen: {samples_100.shape[0] + samples_200.shape[0]} (100-len: {samples_100.shape[0]}, 200-len: {samples_200.shape[0]})\n')
+          f.write(f'  KL_div_base: {metrics["kl_div"]:.4f}\n')
+          f.write(f'  GC_content_diff: {metrics["gc_diff"]:.4f}\n')
+          f.write(f'  Unique_ratio_100: {metrics["unique_ratio_100"]:.4f}\n')
+          f.write(f'  Unique_ratio_200: {metrics["unique_ratio_200"]:.4f}\n')
+          f.write(f'  Valid_structure_ratio: {metrics["valid_ratio"]:.4f}\n\n')
+
+      except Exception as e:
+        import traceback
+        traceback.print_exc()
+    return loss
+
+  def _sample_with_length(self, seq_len, batch_size):
+    """从全MASK采样指定长度的序列。
+    
+    Args:
+      seq_len: 序列长度（100或200）
+      batch_size: 批量大小
+    
+    Returns:
+      生成的序列 [batch_size, seq_len]
+    """
+    device = self.device
+    # 从全MASK开始
+    x = self.mask_index * torch.ones(batch_size, seq_len, dtype=torch.int64, device=device)
+    # 固定<cls>在位置0
+    x[:, 0] = 1
+    
+    # DDPM采样
+    num_steps = self.config.sampling.steps
+    eps = 1e-5
+    timesteps = torch.linspace(1, eps, num_steps + 1, device=device)
+    dt = (1 - eps) / num_steps
+    
+    for i in range(num_steps):
+      t = timesteps[i] * torch.ones(batch_size, 1, device=device)
+      # 使用ddpm_cache采样
+      if self.sampler == 'ddpm_cache':
+        sigma_t, _ = self.noise(t)
+        if t.ndim > 1:
+          t_scalar = t.squeeze(-1)
+        else:
+          t_scalar = t
+        move_chance_t = t_scalar[:, None, None]
+        move_chance_s = (t_scalar - dt)[:, None, None]
+        
+        p_x0 = self.forward(x, sigma_t).exp()
+        q_xs = p_x0 * (move_chance_t - move_chance_s)
+        q_xs[:, :, self.mask_index] = move_chance_s[:, :, 0]
+        _x = _sample_categorical(q_xs)
+        
+        copy_flag = (x != self.mask_index).to(x.dtype)
+        x = copy_flag * x + (1 - copy_flag) * _x
+        # 保持<cls>在位置0
+        x[:, 0] = 1
+      else:
+        # 简单采样
+        sigma_t = self.noise(t)[0]
+        log_p = self.forward(x, sigma_t)
+        p_x0 = log_p.exp()
+        x = _sample_categorical(p_x0)
+        x[:, 0] = 1
+    
+    # 最终去噪
+    if self.config.sampling.noise_removal:
+      t = eps * torch.ones(batch_size, 1, device=device)
+      sigma_t = self.noise(t)[0]
+      x = self.forward(x, sigma_t).argmax(dim=-1)
+    
+    
+    # 固定结构: <cls>位置0, <eos>位置末尾
+    x[:, 0] = 1  # <cls>
+    x[:, -1] = 2  # <eos>（位置99或199）
+    
+    return x
+
+  def _compute_generation_metrics_v2(self, samples_100, samples_200, batch):
+    """计算生成序列与真实序列的差异指标。
+    
+    Args:
+      samples_100: 长度100的生成序列
+      samples_200: 长度200的生成序列
+      batch: 当前batch数据
+    
+    Returns:
+      dict: 包含kl_div, gc_diff, unique_ratio_100, unique_ratio_200, valid_ratio
+    """
+    device = samples_100.device
+    
+    # 1. 碱基分布KL散度 (A=6, C=7, G=8, U=9)
+    def get_base_dist(samples, eos_pos):
+      # 只统计内容部分（排除<cls>和<eos>）
+      content = samples[:, 1:eos_pos]
+      base_counts = torch.zeros(4, device=device)
+      for i, base_idx in enumerate([6, 7, 8, 9]):  # A, C, G, U
+        base_counts[i] = (content == base_idx).float().sum()
+      base_probs = base_counts / (base_counts.sum() + 1e-8)
+      return base_probs
+    
+    # 合并两种长度计算分布
+    gen_dist_100 = get_base_dist(samples_100, 99)
+    gen_dist_200 = get_base_dist(samples_200, 199)
+    gen_dist = (gen_dist_100 * samples_100.shape[0] + gen_dist_200 * samples_200.shape[0]) / (samples_100.shape[0] + samples_200.shape[0])
+    
+    # 从batch计算真实分布
+    real_samples = batch['input_ids']
+    # 找到<eos>位置
+    eos_mask = (real_samples == 2)
+    # 计算所有内容的碱基分布
+    real_base_counts = torch.zeros(4, device=device)
+    for i, base_idx in enumerate([6, 7, 8, 9]):
+      real_base_counts[i] = ((real_samples == base_idx) & (eos_mask.cumsum(-1) == 0)).float().sum()
+    real_dist = real_base_counts / (real_base_counts.sum() + 1e-8)
+    
+    # KL散度: KL(real || gen)
+    kl_div = (real_dist * (real_dist / (gen_dist + 1e-8) + 1e-8).log()).sum().item()
+    
+    # 2. GC含量差异
+    def get_gc_content(samples, eos_pos):
+      content = samples[:, 1:eos_pos]
+      g_count = (content == 8).float().sum()
+      c_count = (content == 7).float().sum()
+      total = content.numel()
+      return (g_count + c_count) / (total + 1e-8)
+    
+    gen_gc_100 = get_gc_content(samples_100, 99).item()
+    gen_gc_200 = get_gc_content(samples_200, 199).item()
+    gen_gc = (gen_gc_100 * samples_100.shape[0] + gen_gc_200 * samples_200.shape[0]) / (samples_100.shape[0] + samples_200.shape[0])
+    
+    # 真实数据的GC含量
+    real_g = ((real_samples == 8) & (eos_mask.cumsum(-1) == 0)).float().sum()
+    real_c = ((real_samples == 7) & (eos_mask.cumsum(-1) == 0)).float().sum()
+    real_total = ((real_samples >= 6) & (real_samples <= 9) & (eos_mask.cumsum(-1) == 0)).float().sum()
+    real_gc = (real_g + real_c) / (real_total + 1e-8)
+    gc_diff = abs(gen_gc - real_gc.item())
+    
+    # 3. 序列唯一性比例（分别计算）
+    gen_tuples_100 = [tuple(seq.cpu().tolist()) for seq in samples_100]
+    unique_ratio_100 = len(set(gen_tuples_100)) / len(gen_tuples_100) if gen_tuples_100 else 0
+    
+    gen_tuples_200 = [tuple(seq.cpu().tolist()) for seq in samples_200]
+    unique_ratio_200 = len(set(gen_tuples_200)) / len(gen_tuples_200) if gen_tuples_200 else 0
+    
+    # 4. 有效结构比例 (<cls>位置0, <eos>位置末尾, 中间只有A/C/G/U)
+    def count_valid(samples, eos_pos):
+      valid_count = 0
+      for seq in samples:
+        is_valid = (seq[0] == 1) and (seq[eos_pos] == 2)  # <cls>和<eos>位置正确
+        content = seq[1:eos_pos]
+        is_valid = is_valid and ((content >= 6) & (content <= 9)).all()  # 中间只有A/C/G/U
+        if is_valid:
+          valid_count += 1
+      return valid_count
+    
+    valid_100 = count_valid(samples_100, 99)
+    valid_200 = count_valid(samples_200, 199)
+    total_samples = samples_100.shape[0] + samples_200.shape[0]
+    valid_ratio = (valid_100 + valid_200) / total_samples if total_samples > 0 else 0
+    
+    return {
+      'kl_div': kl_div,
+      'gc_diff': gc_diff,
+      'unique_ratio_100': unique_ratio_100,
+      'unique_ratio_200': unique_ratio_200,
+      'valid_ratio': valid_ratio
+    }
 
   def on_validation_epoch_end(self):
     if ((self.config.eval.compute_perplexity_on_sanity
@@ -515,8 +733,11 @@ class Diffusion(L.LightningModule):
     #  Not clear if this is a problem or not.
     #  See: https://github.com/Lightning-AI/pytorch-lightning/issues/5558
     optimizer = torch.optim.AdamW(
-      itertools.chain(self.backbone.parameters(),
-                      self.noise.parameters()),
+      itertools.chain(self.noise.parameters(),
+                      self.ebm.parameters(),
+                      self.lm_head.parameters() if hasattr(self, 'lm_head') else [],
+                      self.ebm_vocab_proj.parameters() if hasattr(self, 'ebm_vocab_proj') else [],
+                      self.ebm_energy_head.parameters() if hasattr(self, 'ebm_energy_head') else []),
       lr=self.config.optim.lr,
       betas=(self.config.optim.beta1,
              self.config.optim.beta2),
@@ -653,12 +874,19 @@ class Diffusion(L.LightningModule):
     """
     move_indices = torch.rand(
       * x.shape, device=x.device) < move_chance
+    # Only mask content tokens: <eos>(2) and A(6)/C(7)/G(8)/U(9)
+    # Never mask structural tokens: <pad>(0), <cls>(1), <unk>(3), <mask>(4), <null>(5)
+    content_mask = (x == 2) | (x >= 6)
+    move_indices = move_indices & content_mask
     xt = torch.where(move_indices, self.mask_index, x)
     return xt
 
   def _sample_prior(self, *batch_dims):
-    return self.mask_index * torch.ones(
+    x = self.mask_index * torch.ones(
       * batch_dims, dtype=torch.int64)
+    # Position 0 is always <cls>(1)
+    x[:, 0] = 1
+    return x
 
   def _ddpm_caching_update(self, x, t, dt, p_x0=None):
     assert self.config.noise.type == 'loglinear'
@@ -684,7 +912,10 @@ class Diffusion(L.LightningModule):
     _x = _sample_categorical(q_xs)
     
     copy_flag = (x != self.mask_index).to(x.dtype)
-    return p_x0, copy_flag * x + (1 - copy_flag) * _x
+    x_out = copy_flag * x + (1 - copy_flag) * _x
+    # Preserve <cls> at position 0
+    x_out[:, 0] = 1
+    return p_x0, x_out
 
   def _ddpm_update(self, x, t, dt):
     sigma_t, _ = self.noise(t)
@@ -711,7 +942,10 @@ class Diffusion(L.LightningModule):
     _x = _sample_categorical(q_xs)
 
     copy_flag = (x != self.mask_index).to(x.dtype)
-    return copy_flag * x + (1 - copy_flag) * _x
+    x_out = copy_flag * x + (1 - copy_flag) * _x
+    # Preserve <cls> at position 0
+    x_out[:, 0] = 1
+    return x_out
 
   def _ar_sampler(self, bsz):
     # precompute token buffer
@@ -772,6 +1006,8 @@ class Diffusion(L.LightningModule):
       else:
         unet_conditioning = self.noise(t)[0]
         x = self.forward(x, unet_conditioning).argmax(dim=-1)
+      # Preserve <cls> at position 0
+      x[:, 0] = 1
     return x
 
   def restore_model_and_sample(self, num_steps, eps=1e-5):
@@ -1111,26 +1347,6 @@ class EBM(Diffusion):
     import copy
     from omegaconf import open_dict
 
-    ############################
-    # Load pretrained diffusion as backbone
-    ############################
-    print('info before config_dif:',config)
-    config_diffusion = copy.deepcopy(config)
-    with open_dict(config_diffusion):
-      config_diffusion.backbone = 'hf_dit' # Load pretrained diffusion as backbone
-      config_diffusion.eval.checkpoint_path = 'kuleshov-group/mdlm-owt' # Path to the pretrained diffusion model
-    print('info after config_dif:',config)
-
-    #super().__init__(config_diffusion, tokenizer)
-    super().__init__(config, tokenizer)
-
-    self.backbone.eval()
-    for p in self.backbone.parameters():
-      p.requires_grad = False
-    ############################
-    # Finish loading pretrained diffusion as backbone
-    ############################
-
     if self.config.ebm_backbone == 'hf_dit':
       self.ebm = transformers.AutoModelForMaskedLM.from_pretrained(
         config.eval.checkpoint_path, trust_remote_code=True).backbone
@@ -1138,6 +1354,10 @@ class EBM(Diffusion):
       if UtrLmModel is None:
         raise ImportError("multimolecule is not installed. Please install it first.")
       self.ebm = UtrLmModel.from_pretrained("multimolecule/utrlm-te_el")
+      
+      hidden_size = 128  # UTRLM hidden size
+      self.ebm_vocab_proj = nn.Linear(2 * hidden_size, hidden_size)
+      self.ebm_energy_head = nn.Linear(hidden_size, 1)
     elif self.config.ebm_backbone == 'dit':
       self.ebm = models.dit.DIT(
         self.config, vocab_size=self.vocab_size)
@@ -1172,7 +1392,6 @@ class EBM(Diffusion):
         nn.Linear(config.model.hidden_size, 1, bias=False),
       )
 
-    self.backbone.ebm = self.ebm # Set the EBM as part of the backbone
     if self.config.training.ema > 0:
       self.ema = models.ema.ExponentialMovingAverage(
         itertools.chain(self.backbone.parameters(),
@@ -1181,98 +1400,106 @@ class EBM(Diffusion):
     else:
       self.ema = None
 
-  def ebm_forward(self, xt, sigma, x0=None, log_p_x0=None, attention_mask=None):
+  def ebm_forward(self, xt, sigma, x0=None, x0_neg=None, log_p_x0=None, attention_mask=None):
     sigma = self._process_sigma(sigma)
     #print('in ebm_forward:')
     #print('xt:',xt)
     #print('sigma:',sigma)
     #print('self.config.ebm_backbone:',self.config.ebm_backbone)
 
-    with torch.cuda.amp.autocast(dtype=torch.float32):
-      indices = xt
+    indices = xt
 
-      # rewrite the forward pass of the backbone
-      if self.config.ebm_backbone == 'dit' or self.config.ebm_backbone == 'hf_dit':
-        xt = self.ebm.vocab_embed(indices)
-        x0 = self.ebm.vocab_embed(x0)
-        x = self.ebm.vocab_proj(torch.cat([xt, x0], dim=-1))
-        c = F.silu(self.ebm.sigma_map(sigma))
+    # rewrite the forward pass of the backbone
+    if self.config.ebm_backbone == 'dit' or self.config.ebm_backbone == 'hf_dit':
+      xt = self.ebm.vocab_embed(indices)
+      x0 = self.ebm.vocab_embed(x0)
+      x = self.ebm.vocab_proj(torch.cat([xt, x0], dim=-1))
+      c = F.silu(self.ebm.sigma_map(sigma))
 
-        rotary_cos_sin = self.ebm.rotary_emb(x)
+      rotary_cos_sin = self.ebm.rotary_emb(x)
 
-        with torch.cuda.amp.autocast(dtype=torch.bfloat16):
-          for i in range(len(self.ebm.blocks)):
-            x = self.ebm.blocks[i](x, rotary_cos_sin, c, seqlens=None)
-          x = self.ebm.output_layer(x, c)
+      for i in range(len(self.ebm.blocks)):
+        x = self.ebm.blocks[i](x, rotary_cos_sin, c, seqlens=None)
+      x = self.ebm.output_layer(x, c)
 
-          mean_pool = x.mean(dim=1)
-          energy = self.ebm.energy_head(mean_pool)
-          print('mean_pool:',mean_pool)
-          print('energy:',energy)
+      mean_pool = x.mean(dim=1)
+      energy = self.ebm.energy_head(mean_pool)
+      print('mean_pool:',mean_pool)
+      print('energy:',energy)
 
-      elif self.config.ebm_backbone == 'ar':
-        parameterization = self.parameterization
-        self.parameterization = 'ar'
-        if attention_mask is None:
-          attention_mask = torch.ones_like(x0)
-        (x0_input_tokens, x0_output_tokens, _) = self._maybe_sub_sample(
-          x0, attention_mask)
-        (xt_input_tokens, xt_output_tokens, _) = self._maybe_sub_sample(
-          xt, attention_mask)
-        self.parameterization = parameterization
+    elif self.config.ebm_backbone == 'ar':
+      parameterization = self.parameterization
+      self.parameterization = 'ar'
+      if attention_mask is None:
+        attention_mask = torch.ones_like(x0)
+      (x0_input_tokens, x0_output_tokens, _) = self._maybe_sub_sample(
+        x0, attention_mask)
+      (xt_input_tokens, xt_output_tokens, _) = self._maybe_sub_sample(
+        xt, attention_mask)
+      self.parameterization = parameterization
 
-        x0_emb = self.ebm.vocab_embed(x0_input_tokens)
-        x = x0_emb
-        #print('x:',x)
+      x0_emb = self.ebm.vocab_embed(x0_input_tokens)
+      x = x0_emb
+      #print('x:',x)
 
-        rotary_cos_sin = self.ebm.rotary_emb(x)
-        with torch.cuda.amp.autocast(dtype=torch.bfloat16):
-          for i in range(len(self.ebm.blocks)):
-            x = self.ebm.blocks[i](
-              x, rotary_cos_sin, None, seqlens=None
-            )
-          output = self.ebm.output_layer(x, None)
-          #print('output:',output)
-        # log prob at the mask index = - infinity
-        output[:, :, self.mask_index] = self.neg_infinity
-        # Normalize the logits such that x.exp() is
-        # a probability distribution over vocab_size.
-        logits = output - torch.logsumexp(output, dim=-1, keepdim=True)
-        # Apply updates directly in the logits matrix.
+      rotary_cos_sin = self.ebm.rotary_emb(x)
+      for i in range(len(self.ebm.blocks)):
+        x = self.ebm.blocks[i](
+          x, rotary_cos_sin, None, seqlens=None
+        )
+      output = self.ebm.output_layer(x, None)
+      #print('output:',output)
+      # log prob at the mask index = - infinity
+      output[:, :, self.mask_index] = self.neg_infinity
+      # Normalize the logits such that x.exp() is
+      # a probability distribution over vocab_size.
+      logits = output - torch.logsumexp(output, dim=-1, keepdim=True)
+      # Apply updates directly in the logits matrix.
 
-        carry_over = self.config.sampling.ar_carry_over
-        if carry_over:
-          # For the logits of the unmasked tokens, set all values
-          # to -infinity except for the indices corresponding to
-          # the unmasked tokens.
-          unmasked_indices = (xt_output_tokens != self.mask_index)
-          logits[unmasked_indices] = self.neg_infinity
-          logits[unmasked_indices, xt_output_tokens[unmasked_indices]] = 0
+      carry_over = self.config.sampling.ar_carry_over
+      if carry_over:
+        # For the logits of the unmasked tokens, set all values
+        # to -infinity except for the indices corresponding to
+        # the unmasked tokens.
+        unmasked_indices = (xt_output_tokens != self.mask_index)
+        logits[unmasked_indices] = self.neg_infinity
+        logits[unmasked_indices, xt_output_tokens[unmasked_indices]] = 0
 
-        with torch.cuda.amp.autocast(dtype=torch.bfloat16):
-          energy_ar = (logits.gather(
-            -1, x0_output_tokens[:, :, None])[:, :, 0]).sum(dim=-1, keepdim=True)
-          energy_diffusion = (log_p_x0.gather(
-            -1, x0[:, :, None])[:, :, 0]).sum(dim=-1, keepdim=True)
-          energy = - energy_ar + energy_diffusion
-          #print('energy_ar:',energy_ar)
-          #print('energy_diffusion:',energy_diffusion)
-          #print('energy:',energy)
+      energy_ar = (logits.gather(
+        -1, x0_output_tokens[:, :, None])[:, :, 0]).sum(dim=-1, keepdim=True)
+      energy_diffusion = (log_p_x0.gather(
+        -1, x0[:, :, None])[:, :, 0]).sum(dim=-1, keepdim=True)
+      energy = - energy_ar + energy_diffusion
+      #print('energy_ar:',energy_ar)
+      #print('energy_diffusion:',energy_diffusion)
+      #print('energy:',energy)
 
-      elif self.config.ebm_backbone == 'utrlm':
-        # UTRLM作为EBM的处理
-        with torch.cuda.amp.autocast(dtype=torch.float32):
-          # 使用UTRLM编码xt和x0
-          xt_hidden = self.ebm(xt).last_hidden_state  # [batch, seq, 128]
-          x0_hidden = self.ebm(x0).last_hidden_state  # [batch, seq, 128]
-          
-          # 简单的能量计算：xt和x0的隐藏状态差异
-          # 这里使用均方误差作为能量
-          energy = ((xt_hidden - x0_hidden) ** 2).mean(dim=-1).sum(dim=-1, keepdim=True)
-          
+    elif self.config.ebm_backbone == 'utrlm':
+      # UTRLM词级拼接：词嵌入拼接 → 投影 → encoder → masked mean pooling → 能量
+      xt_emb = self.backbone.embeddings.word_embeddings(indices)  # [B, L, 128]
+      x0_emb = self.backbone.embeddings.word_embeddings(x0)       # [B, L, 128]
+      x = self.ebm_vocab_proj(torch.cat([xt_emb, x0_emb], dim=-1))  # [B, L, 256] → [B, L, 128]
+      # 将attention_mask传入encoder，屏蔽pad位置的注意力
+      if attention_mask is not None:
+        # encoder需要 [B, 1, 1, L] 格式的扩展mask
+        extended_mask = self.ebm.get_extended_attention_mask(
+          attention_mask, x.shape[:2], x.device)
       else:
-        raise ValueError(
-          f'Unknown backbone: {self.config.ebm_backbone}')
+        extended_mask = None
+      encoder_out = self.ebm.encoder(x, attention_mask=extended_mask).last_hidden_state  # [B, L, 128]
+
+      if attention_mask is not None:
+        pooling_mask = attention_mask.clone()
+        pooling_mask[:, 0] = 0  
+        mask = pooling_mask.unsqueeze(-1).float()  # [B, L, 1]
+        mean_pool = (encoder_out * mask).sum(dim=1) / mask.sum(dim=1).clamp(min=1)  # [B, 128]
+      else:
+        mean_pool = encoder_out[:, 1:, :].mean(dim=1)  # 跳过位置0(<cls>)
+      energy = self.ebm_energy_head(mean_pool)  # [B, 1]
+
+    else:
+      raise ValueError(
+        f'Unknown backbone: {self.config.ebm_backbone}')
           
     return energy
   
@@ -1349,6 +1576,7 @@ class EBM(Diffusion):
       else:
         unet_conditioning = self.noise(t)[0]
         x = self.forward(x, unet_conditioning).argmax(dim=-1)
+      x[:, 0] = 1
     return x
   
   def _forward_pass_diffusion(self, x0, attention_mask=None, prefix=None):
@@ -1378,18 +1606,28 @@ class EBM(Diffusion):
     #print('move_chance:',move_chance)
     xt = self.q_xt(x0, move_chance)
     #print('xt:',xt)
-    with torch.no_grad():
-      log_p_x0 = self.forward(xt, unet_conditioning).detach()  # No update for diffusion model
+    log_p_x0 = self.forward(xt, unet_conditioning)
     x0_pos = x0
     k = 1
     x0_neg = _sample_categorical(log_p_x0.exp(), num_samples=k)  # (batch_size * k, seq_len)
-    energy_pos = self.ebm_forward(xt, unet_conditioning, x0_pos, log_p_x0, attention_mask)
-    energy_neg = self.ebm_forward(xt.repeat(k, 1), 
-                                  unet_conditioning.repeat(k, 1), 
-                                  x0_neg, log_p_x0.repeat(k, 1, 1), 
-                                  attention_mask.repeat(k, 1)).view(x0.shape[0], k, -1)
-
-    energy_neg = energy_neg[:, 0]
+    
+    if self.config.ebm_backbone == 'utrlm':
+      energy_pos = self.ebm_forward(xt, unet_conditioning, x0=x0_pos,
+                                    attention_mask=attention_mask)
+      energy_neg = self.ebm_forward(xt.repeat(k, 1),
+                                    unet_conditioning.repeat(k, 1),
+                                    x0=x0_neg,
+                                    attention_mask=attention_mask.repeat(k, 1)
+                                    ).view(x0.shape[0], k, -1)
+      energy_neg = energy_neg[:, 0]
+    else:
+      # 其他分支: 使用原有逻辑
+      energy_pos = self.ebm_forward(xt, unet_conditioning, x0_pos, log_p_x0, attention_mask)
+      energy_neg = self.ebm_forward(xt.repeat(k, 1), 
+                                    unet_conditioning.repeat(k, 1), 
+                                    x0_neg, log_p_x0.repeat(k, 1, 1), 
+                                    attention_mask.repeat(k, 1)).view(x0.shape[0], k, -1)
+      energy_neg = energy_neg[:, 0]
 
     model_output = torch.cat([energy_pos, energy_neg], dim=0)
     utils.print_nans(model_output, 'model_output')
@@ -1398,8 +1636,7 @@ class EBM(Diffusion):
 
     if prefix == 'train':
       # Noise contrastive estimation
-      loss = - (torch.log(torch.sigmoid(-energy_pos) + 1e-8) \
-                + torch.log(torch.sigmoid(energy_neg) + 1e-8))
+      loss = -F.logsigmoid(-energy_pos) - F.logsigmoid(energy_neg)
       
       assert loss.shape[-1] == 1 and loss.ndim == 2
       return loss
